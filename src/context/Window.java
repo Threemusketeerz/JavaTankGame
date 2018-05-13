@@ -15,6 +15,7 @@ public class Window extends JFrame
     {
         //player = new Sprite();
         initWindowWithView("Sprite");
+        JsonObject
     }
 
     private void initWindowWithView(String title)

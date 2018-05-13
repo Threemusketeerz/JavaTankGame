@@ -67,4 +67,7 @@
    #+BEGIN_SRC java
       public boolean ternary() { return foo == bar ? true : false; }
    #+END_SRC
+
+* Afhængigheder (dependencies)
+  - Javazoom
    

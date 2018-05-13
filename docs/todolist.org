@@ -1,25 +1,24 @@
 * TASKS (PÅ ENGELSK)
 ** DONE Make sound component, grab it from escapepepe.
    CLOSED: [2018-05-13 Sun 17:21]
-** TODO Draw a board in a window.
-** TODO Generate a view out of the window
 ** TODO Make sprite component  
-**** I may need to split this up into map and sprite.
-** TODO Make collision component
+**** DONE I may need to split this up into map and sprite.
+     CLOSED: [2018-05-13 Sun 21:56]
+** TODO Make Collision component
 ** TODO Make Window component
 **** TODO Draw a board from a tileset in a window, NOT a picture
 **** TODO Generate a view for the player
 ** DONE Transfer whatever is usable in SherpherdGame over.
    CLOSED: [2018-05-13 Sun 17:21]
-
+** TODO Fork [[https://github.com/bjorn/tiled/tree/master/util/java/libtiled-java][libtiled-java xml reader]]. Read the src code. Use this load it into a context. 
 
 * Architecture notes
 Which architecture fits the bill best?
 Pros and cons.
 ** Pipe and filter
-   | Pros | |
-   |------+------------------|
-   | Cons |                  |
+   | Pros |   |
+   |------+---|
+   | Cons |   |
 ** Componenent bashed
    | Pros | Cons |
    |------+------|
