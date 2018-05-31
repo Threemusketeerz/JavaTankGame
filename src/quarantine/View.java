@@ -1,4 +1,4 @@
-package context;
+package quarantine;
 
 import java.awt.*;
 import java.awt.image.*;
@@ -13,7 +13,6 @@ public class View extends JPanel
     private int cameraX, cameraY, cameraWidth, cameraHeight;
     private int offsetX, offsetY;
     private Image view;
-    private Board board;
 
     public View(int playerX, int playerY,
                 int worldSizeW, int worldSizeH,

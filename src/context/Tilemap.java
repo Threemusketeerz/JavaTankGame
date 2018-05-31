@@ -6,29 +6,42 @@ import javax.swing.*;
 import javax.imageio.*;
 import java.awt.*;
 
-public class Board extends JPanel
+/**
+ * Tilemap will be a picture of a map to be used as a map for all players.
+ * This will eventually, if possible be replaced by a more sophisticated way of
+ * rendering maps. Such as Tile rendering.
+ */
+public class Tilemap extends JPanel
 {
     private int x, y;
     private String mapFile;
     private BufferedImage loadedImage;
     private Image scaledImage;
 
-    public Board(String mapFile)
+    public Tilemap(String mapFile)
     {
         x = 0;
         y = 0;
         this.mapFile = mapFile;
-        loadImage(this.mapFile);
-        setPreferredSize(new Dimension(getLoadedImage().getWidth(this), getLoadedImage().getHeight(this)));
+        loadImage(mapFile);
+        // setPreferredSize(new Dimension(getLoadedImage().getWidth(this), getLoadedImage().getHeight(this)));
         setVisible(true);
     }
 
+    /**
+     * Loads in our image from our resources.
+     * @param mapFile Map to load in.
+     */
     private void loadImage(String mapFile)
     {
         try
         {
             loadedImage = ImageIO.read(getClass().getResourceAsStream(mapFile));
-            scaledImage = loadedImage.getScaledInstance(500, 500, 0);
+            if (loadedImage == null)
+            {
+                System.out.println("Crying");
+            }
+            // scaledImage = loadedImage.getScaledInstance(500, 500, 0);
         }
         catch(IOException ioe)
         {
@@ -46,7 +59,7 @@ public class Board extends JPanel
 
     public int getX() { return x;  }
     public int getY() { return y; }
-    public int getW() { return loadedImage.getWidth(); }
-    public int getH() { return loadedImage.getHeight(); }
+    public int getWidth() { return loadedImage.getWidth(); }
+    public int getHeight() { return loadedImage.getHeight(); }
     public BufferedImage getLoadedImage() { return loadedImage; }
 }

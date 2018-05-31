@@ -1,9 +1,9 @@
 package context;
 
-import java.awt.*;
+// import quarantine.View;
+
 import java.awt.image.*;
 import java.awt.event.*;
-import javax.swing.*;
 
 public class Sprite
 {

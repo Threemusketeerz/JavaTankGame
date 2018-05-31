@@ -6,35 +6,16 @@ import java.awt.*;
 public class Window extends JFrame
 {
     private final int WIDTH = 800, HEIGHT = 600;
-
-    private Board board;
-    // player?
-    private Sprite player;
+    private Tilemap map;
 
     public Window()
     {
         //player = new Sprite();
-        initWindowWithView("Sprite");
-        JsonObject
-    }
-
-    private void initWindowWithView(String title)
-    {
-        JPanel gamePanel = player.getView();
-        gamePanel.setLayout(null);
-        gamePanel.setLocation(0, 0);
-        add(gamePanel);
-
+        map = new Tilemap("/map2.png");
+        setContentPane(map);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setPreferredSize(new Dimension(map.getLoadedImage().getWidth(), map.getLoadedImage().getHeight()));
         pack();
-
-        setTitle(title);
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+        setVisible(true);
     }
-
-    private void initWindow(String title)
-    {
-        JPanel board = new Board("")
-    }
-
 }
