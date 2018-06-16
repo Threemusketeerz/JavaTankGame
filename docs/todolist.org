@@ -10,5 +10,5 @@
 **** TODO Generate a view for the player
 ** DONE Transfer whatever is usable in SherpherdGame over.
    CLOSED: [2018-05-13 Sun 17:21]
-** TODO Fork [[https://github.com/bjorn/tiled/tree/master/util/java/libtiled-java][libtiled-java xml reader]]. Read the src code. Use this load it into a context. 
+** TODO Fork [[https://github.com/bjorn/tiled/tree/master/util/java/libtiled-java][libtiled-java xml reader]]. Read the src code. Use this load it into a model.
 *** TODO Reconsider structure of Engine with th reader in mind. 
