@@ -108,7 +108,95 @@
   
   <!-- Modules -->
   
-  <import file="${basedir}/.idea/module_javasimple2dgameengine.xml"/>
+  
+  <!-- Module JavaSimple2DGameEngine -->
+  
+  <dirname property="module.javasimple2dgameengine.basedir" file="${ant.file}"/>
+  
+  
+  <property name="module.jdk.home.javasimple2dgameengine" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.javasimple2dgameengine" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.javasimple2dgameengine" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.javasimple2dgameengine" value="-encoding UTF-8 -source 1.8 -target 1.8 ${compiler.args}"/>
+  
+  <property name="javasimple2dgameengine.output.dir" value="${module.javasimple2dgameengine.basedir}/out/production/JavaSimple2DGameEngine"/>
+  <property name="javasimple2dgameengine.testoutput.dir" value="${module.javasimple2dgameengine.basedir}/out/test/JavaSimple2DGameEngine"/>
+  
+  <path id="javasimple2dgameengine.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="javasimple2dgameengine.module.production.classpath">
+    <path refid="${module.jdk.classpath.javasimple2dgameengine}"/>
+    <path refid="library.libs.classpath"/>
+  </path>
+  
+  <path id="javasimple2dgameengine.runtime.production.module.classpath">
+    <pathelement location="${javasimple2dgameengine.output.dir}"/>
+    <path refid="library.libs.classpath"/>
+  </path>
+  
+  <path id="javasimple2dgameengine.module.classpath">
+    <path refid="${module.jdk.classpath.javasimple2dgameengine}"/>
+    <pathelement location="${javasimple2dgameengine.output.dir}"/>
+    <path refid="library.libs.classpath"/>
+  </path>
+  
+  <path id="javasimple2dgameengine.runtime.module.classpath">
+    <pathelement location="${javasimple2dgameengine.testoutput.dir}"/>
+    <pathelement location="${javasimple2dgameengine.output.dir}"/>
+    <path refid="library.libs.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.javasimple2dgameengine">
+    <patternset refid="ignored.files"/>
+    <exclude name="quarantine/**"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.javasimple2dgameengine">
+    <patternset refid="excluded.from.module.javasimple2dgameengine"/>
+  </patternset>
+  
+  <path id="javasimple2dgameengine.module.sourcepath">
+    <dirset dir="${module.javasimple2dgameengine.basedir}">
+      <include name="src"/>
+      <include name="assets"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.javasimple2dgameengine" depends="compile.module.javasimple2dgameengine.production,compile.module.javasimple2dgameengine.tests" description="Compile module JavaSimple2DGameEngine"/>
+  
+  <target name="compile.module.javasimple2dgameengine.production" depends="register.custom.compilers" description="Compile module JavaSimple2DGameEngine; production classes">
+    <mkdir dir="${javasimple2dgameengine.output.dir}"/>
+    <javac2 destdir="${javasimple2dgameengine.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.javasimple2dgameengine}/javac">
+      <compilerarg line="${compiler.args.javasimple2dgameengine}"/>
+      <bootclasspath refid="javasimple2dgameengine.module.bootclasspath"/>
+      <classpath refid="javasimple2dgameengine.module.production.classpath"/>
+      <src refid="javasimple2dgameengine.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.javasimple2dgameengine"/>
+    </javac2>
+    
+    <copy todir="${javasimple2dgameengine.output.dir}">
+      <fileset dir="${module.javasimple2dgameengine.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.javasimple2dgameengine.basedir}/assets">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.javasimple2dgameengine.tests" depends="register.custom.compilers,compile.module.javasimple2dgameengine.production" description="compile module JavaSimple2DGameEngine; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.javasimple2dgameengine" description="cleanup module">
+    <delete dir="${javasimple2dgameengine.output.dir}"/>
+    <delete dir="${javasimple2dgameengine.testoutput.dir}"/>
+  </target>
   
   <target name="init" description="Build initialization">
     <!-- Perform any build initialization in this target -->

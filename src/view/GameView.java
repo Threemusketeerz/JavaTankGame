@@ -16,7 +16,7 @@ public class GameView extends JPanel implements ActionListener
 {
     private int                 mapWidth;
     private int                 mapHeight;
-    private final int           DELAY = 5;
+    private final int           DELAY = 20;
     private Timer               timer;
     private Map                 map;
     private Sprite              player;
@@ -29,8 +29,6 @@ public class GameView extends JPanel implements ActionListener
 
         setVisible(true);
 
-        timer = new Timer(DELAY, this);
-        timer.start();
         gameManager = new GameManager();
 
         sprites = new ArrayList<>();
@@ -39,17 +37,27 @@ public class GameView extends JPanel implements ActionListener
         mapWidth = map.getMap().getWidth();
         mapHeight = map.getMap().getHeight();
 
-        player = new Sprite("/Tank/PNG/Tanks/tankBlue.png", "Player 1", mapWidth/2, mapHeight/2);
+        player = new Sprite("/Tank/PNG/Tanks/tankBlue.png", "Player 1", mapWidth / 2, mapHeight / 2);
 
         addKeyListener(new TAdapter());
         setFocusable(true);
         setDoubleBuffered(true);
 
         setPreferredSize(new Dimension(mapWidth, mapHeight));
+
+        timer = new Timer(DELAY, this);
+        timer.start();
     }
 
-    public int getMapWidth() { return mapWidth; }
-    public int getMapHeight() { return mapHeight; }
+    public int getMapWidth()
+    {
+        return mapWidth;
+    }
+
+    public int getMapHeight()
+    {
+        return mapHeight;
+    }
 
     public void update()
     {
@@ -94,7 +102,7 @@ public class GameView extends JPanel implements ActionListener
         }
     }
 
-    public static void main (String[] args)
+    public static void main(String[] args)
     {
         EventQueue.invokeLater(new Runnable()
         {
@@ -102,15 +110,15 @@ public class GameView extends JPanel implements ActionListener
             public void run()
             {
                 Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-                Dimension windowSize = new Dimension();
+                Point windowLocation = new Point();
                 JFrame frame = new JFrame();
                 frame.setContentPane(new GameView());
 //                frame.setLocation((int)screenSize.getWidth()/2 - mapWidth/2, (int)screenSize.getHeight()/2 - mapHeight/2);
                 frame.setLocationRelativeTo(null);
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.pack();
-                windowSize.setSize(screenSize.getWidth()/2 - frame.getWidth()/2, screenSize.getHeight()/2 - frame.getHeight()/2);
-                frame.setLocation((int)windowSize.getWidth(), (int)windowSize.getHeight());
+                windowLocation.setLocation(screenSize.getWidth() / 2 - frame.getWidth() / 2, screenSize.getHeight() / 2 - frame.getHeight() / 2);
+                frame.setLocation((int) windowLocation.getX(), (int) windowLocation.getY());
                 frame.setVisible(true);
             }
         });

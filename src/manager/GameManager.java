@@ -16,7 +16,7 @@ public class GameManager
         AffineTransform affineTransform = gc.getTransform();
         AffineTransform newTransform = new AffineTransform();
         newTransform.translate(sprite.getX(), sprite.getY());
-        affineTransform.rotate(Math.toRadians(degrees), sprite.getLoadedImage().getWidth()/2, sprite.getLoadedImage().getHeight()/2);
+        affineTransform.rotate(Math.toRadians(degrees), sprite.getLoadedImage().getWidth() / 2, sprite.getLoadedImage().getHeight() / 2);
         affineTransform.translate(sprite.getX(), sprite.getY());
     }
 
@@ -47,7 +47,7 @@ public class GameManager
     {
         int key = e.getKeyCode();
 
-        switch(key)
+        switch (key)
         {
             case KeyEvent.VK_UP:
                 player.setDy(0);
