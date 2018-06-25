@@ -2,7 +2,7 @@ package model;
 
 public enum GameRules
 {
-    SPEED(2), ROTATE_SPEED(2);
+    SPEED(2), ROTATE_SPEED(2), BULLET_SPEED(10);
 
 
     private int value;

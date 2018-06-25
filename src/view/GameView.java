@@ -1,9 +1,7 @@
 package view;
 
 import manager.GameManager;
-import model.Constraint;
-import model.Map;
-import model.Tank;
+import model.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,8 +20,9 @@ public class GameView extends JPanel implements ActionListener
     private final int           DELAY = 20;
     private Timer               timer;
     private Map                 map;
-    private Tank player;
-    private ArrayList<Tank> tanks;
+    private Tank                player;
+    private ArrayList<Tank>     tanks;
+    private ArrayList<Bullet>   bullets;
     private GameManager         gameManager;
 
     public GameView()
@@ -35,12 +34,24 @@ public class GameView extends JPanel implements ActionListener
         gameManager = new GameManager();
 
         tanks = new ArrayList<>();
-        map = new Map("/map2.png");
+        bullets = BulletContainer.getInstance().getBullets();
+
+        // Create map.
+        MapContainer.getInstance().setMap(new Map("/map2.png"));
+        // Assign it.
+        map = MapContainer.getInstance().getMap();
 
         mapWidth = map.getMap().getWidth();
         mapHeight = map.getMap().getHeight();
 
-        player = new Tank("/Tank/PNG/Tanks/tankBlue.png", "/Tank/PNG/Tanks/barrelBlue.png", "/Tank/PNG/Tanks/bulletBlue.png", "Player 1", mapWidth / 2, mapHeight / 2, 0.0, new Constraint(0, 0, map.getMap().getWidth(), map.getMap().getHeight()), null);
+        player = new Tank("/Tank/PNG/Tanks/tankBlue.png",
+                "/Tank/PNG/Tanks/barrelBlue.png",
+                "/Tank/PNG/Bullets/bulletBlue.png",
+                "Player 1",
+                mapWidth / 2, mapHeight / 2, 0.0,
+                new Constraint(0, 0, mapWidth, mapHeight),
+                null);
+        player.setConstraint(new Constraint(0, 0, mapWidth, mapHeight));
 
         addKeyListener(new TAdapter());
         setFocusable(true);
@@ -73,50 +84,72 @@ public class GameView extends JPanel implements ActionListener
         Graphics2D g2d = (Graphics2D) g.create();
         // Draw map
         g.drawImage(map.getMap(), 0, 0, null);
-        g2d.dispose();
 
-        g2d = (Graphics2D) g.create();
         drawPlayer(g2d, player);
-        g2d.dispose();
+        for (Bullet bullet : bullets)
+        {
+            drawBullet(g2d, player, bullet);
+        }
 
         // Draw players from server.
-//        for (Tank sprite : tanks)
+//        for (Tank tank : tanks)
 //        {
-//            g2d.drawImage(sprite.getLoadedImage(), sprite.getAffineTransform(), null);
+//            drawPlayer(g2d, tank);
 //        }
+
+        g2d.dispose();
     }
 
-    public void drawPlayer(Graphics2D g2d, Tank player)
+    /**
+     * Draws tank with rotation, this is both the cannon and the tankbase.
+     * @param g2d       Graphics context to draw in
+     * @param tank      Tank to draw
+     */
+    public void drawPlayer(Graphics2D g2d, Tank tank)
     {
-        // Draw player
         // Draws the tank base.
-        AffineTransform baseAt = AffineTransform.getTranslateInstance(player.getX() - player.getWidth()/2, player.getY() - player.getHeight()/2);
-        baseAt.rotate(Math.toRadians(player.getBufferRotation()), player.getWidth()/2, player.getHeight()/2);
+        drawDrawable(g2d, tank);
 
         // Draws cannon onto tank
-        BufferedImage cannonImage = player.getTankCannon();
+        // This is a bit finicky. This should probably also be put into the drawable. Nevertheless
+        // we split it up for now.
+        // TODO: Make the cannon drawable
+        BufferedImage cannonImage = tank.getTankCannon();
         // Sets the location of the image, we want it in the middle of the tank.
-        AffineTransform cannonAt = AffineTransform.getTranslateInstance(player.getX() - cannonImage.getWidth()/2, player.getY() - cannonImage.getHeight());
+        AffineTransform cannonAt = AffineTransform.getTranslateInstance(tank.getX() - cannonImage.getWidth()/2, tank.getY() - cannonImage.getHeight());
         // Calculates rotation. We want the rotation to happen at the bottom of the picture, ergo
         // .getHeight is not divided by 2
-        cannonAt.rotate(Math.toRadians(player.getBufferRotation()), cannonImage.getWidth()/2, cannonImage.getHeight());
+        cannonAt.rotate(Math.toRadians(tank.getRotation()), cannonImage.getWidth()/2, cannonImage.getHeight());
 
-        g2d.drawImage(player.getTankBase(), baseAt,null);
-        g2d.drawImage(player.getTankCannon(), cannonAt, null);
+        g2d.drawImage(tank.getTankCannon(), cannonAt, null);
     }
 
-    public void shoot(Graphics2D g2d, Tank player)
+    public void drawDrawable(Graphics2D g2d, Drawable drawable)
     {
+        AffineTransform baseAt = AffineTransform.getTranslateInstance(drawable.getX() - drawable.getWidth()/2, drawable.getY() - drawable.getHeight()/2);
+        baseAt.rotate(Math.toRadians(drawable.getRotation()), drawable.getWidth()/2, drawable.getHeight()/2);
 
+        g2d.drawImage(drawable.getImage(), baseAt, null);
+
+    }
+
+    public void drawBullet(Graphics2D g2d, Tank tank, Bullet bullet)
+    {
+        AffineTransform baseAt = AffineTransform.getTranslateInstance(tank.getX() - bullet.getWidth()/2, tank.getY() - bullet.getHeight());
+        baseAt.rotate(Math.toRadians(bullet.getRotation()), bullet.getWidth()/2, bullet.getHeight()/2);
+
+        g2d.drawImage(bullet.getImage(), baseAt, null);
 
     }
 
     @Override
     public void actionPerformed(ActionEvent e)
     {
-        gameManager.move(player);
-//        for (Tank sprite : tanks)
-//            gameManager.move(sprite);
+        gameManager.moveTank(player);
+        for (Bullet bullet : BulletContainer.getInstance().getBullets())
+        {
+            gameManager.move(bullet);
+        }
         update();
     }
 
