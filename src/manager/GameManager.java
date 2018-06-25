@@ -1,17 +1,19 @@
 package manager;
 
 import model.GameRules;
-import model.Sprite;
+import model.Tank;
 
-import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
 
 public class GameManager
 {
 
-    public void driveForward(Sprite player)
+    /**
+     * Uses trigonometry to calculate the correct direction when facing forwards.
+     *
+     * @param player Player driving forward
+     */
+    public void driveForward(Tank player)
     {
         double speed = GameRules.SPEED.getValue();
         double rotation = Math.toRadians(player.getBufferRotation());
@@ -22,9 +24,10 @@ public class GameManager
 //        System.out.println("Y speed: " + ySpeed);
         player.setDx(xSpeed);
         player.setDy(ySpeed);
+        checkConstraints(player);
     }
 
-    public void move(Sprite player)
+    public void move(Tank player)
     {
 //        y += dy;
         if (player.isDriving())
@@ -34,8 +37,42 @@ public class GameManager
         player.setY(player.getY() + player.getDy());
     }
 
+    /**
+     * Checks whether player is violating the constraints. It then "recalibrates the location of the player"
+     * @param player    Player to check for
+     */
+    public void checkConstraints(Tank player)
+    {
+        // Fetch relevant data
+        double minX = player.getConstraint().getMinX() + player.getWidth()/2;
+        double minY = player.getConstraint().getMinY() + player.getHeight()/2;
+        double maxX = player.getConstraint().getMaxX() - player.getWidth()/2;
+        double maxY = player.getConstraint().getMaxY() - player.getHeight()/2;
+        double playerX = player.getX();
+        double playerY = player.getY();
+
+        // TODO: This needs some love, you can exit out of the frame in the edges of the map.
+        if (playerX <= minX)
+        {
+            player.setX(minX);
+        }
+        if (playerX >= maxX)
+        {
+            player.setX(maxX);
+        }
+        if (playerY <= minY)
+        {
+            player.setY(minY);
+        }
+        if (playerY >= maxY)
+        {
+            player.setY(maxY);
+        }
+    }
+
+
     // TODO: Reevaluate whether to keep key presses in Controller layer. We might want his this somewhere else.
-    public void keyPressed(Sprite player, KeyEvent e)
+    public void keyPressed(Tank player, KeyEvent e)
     {
         int key = e.getKeyCode();
 
@@ -57,7 +94,7 @@ public class GameManager
         }
     }
 
-    public void keyReleased(Sprite player, KeyEvent e)
+    public void keyReleased(Tank player, KeyEvent e)
     {
         int key = e.getKeyCode();
 
@@ -85,8 +122,4 @@ public class GameManager
         }
     }
 
-//    public void move(Sprite player)
-//    {
-//        player.move();
-//    }
 }

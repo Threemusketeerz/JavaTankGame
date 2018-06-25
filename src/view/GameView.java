@@ -1,8 +1,9 @@
 package view;
 
 import manager.GameManager;
+import model.Constraint;
 import model.Map;
-import model.Sprite;
+import model.Tank;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,25 +22,25 @@ public class GameView extends JPanel implements ActionListener
     private final int           DELAY = 20;
     private Timer               timer;
     private Map                 map;
-    private Sprite              player;
-    private ArrayList<Sprite>   sprites;
+    private Tank player;
+    private ArrayList<Tank> tanks;
     private GameManager         gameManager;
 
     public GameView()
     {
-        //player = new Sprite();
+        //player = new Tank();
 
         setVisible(true);
 
         gameManager = new GameManager();
 
-        sprites = new ArrayList<>();
+        tanks = new ArrayList<>();
         map = new Map("/map2.png");
 
         mapWidth = map.getMap().getWidth();
         mapHeight = map.getMap().getHeight();
 
-        player = new Sprite("/Tank/PNG/Tanks/tankBlue.png", "/Tank/PNG/Tanks/barrelBlue.png", "Player 1", mapWidth / 2, mapHeight / 2, 0.0);
+        player = new Tank("/Tank/PNG/Tanks/tankBlue.png", "/Tank/PNG/Tanks/barrelBlue.png", "/Tank/PNG/Tanks/bulletBlue.png", "Player 1", mapWidth / 2, mapHeight / 2, 0.0, new Constraint(0, 0, map.getMap().getWidth(), map.getMap().getHeight()), null);
 
         addKeyListener(new TAdapter());
         setFocusable(true);
@@ -79,13 +80,13 @@ public class GameView extends JPanel implements ActionListener
         g2d.dispose();
 
         // Draw players from server.
-//        for (Sprite sprite : sprites)
+//        for (Tank sprite : tanks)
 //        {
 //            g2d.drawImage(sprite.getLoadedImage(), sprite.getAffineTransform(), null);
 //        }
     }
 
-    public void drawPlayer(Graphics2D g2d, Sprite player)
+    public void drawPlayer(Graphics2D g2d, Tank player)
     {
         // Draw player
         // Draws the tank base.
@@ -104,12 +105,17 @@ public class GameView extends JPanel implements ActionListener
         g2d.drawImage(player.getTankCannon(), cannonAt, null);
     }
 
+    public void shoot(Graphics2D g2d, Tank player)
+    {
+
+
+    }
 
     @Override
     public void actionPerformed(ActionEvent e)
     {
         gameManager.move(player);
-//        for (Sprite sprite : sprites)
+//        for (Tank sprite : tanks)
 //            gameManager.move(sprite);
         update();
     }
