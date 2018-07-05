@@ -3,6 +3,7 @@ package manager;
 import model.*;
 
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 public class GameManager
 {
@@ -26,17 +27,17 @@ public class GameManager
         checkConstraints(tank, tank.getWidth(), tank.getHeight());
     }
 
-    public void shoot(Bullet bullet)
-    {
-        double speed = bullet.getSpeed();
-        double rotation = Math.toRadians(bullet.getRotation());
-        double xSpeed = Math.sin(rotation) * speed;
-        double ySpeed = -Math.cos(rotation) * speed;
-
-        bullet.setDx(xSpeed);
-        bullet.setDy(ySpeed);
-        checkConstraints(bullet, bullet.getWidth(), bullet.getHeight());
-    }
+//    public void shoot(Bullet bullet)
+//    {
+//        double speed = bullet.getSpeed();
+//        double rotation = Math.toRadians(bullet.getRotation());
+//        double xSpeed = Math.sin(rotation) * speed;
+//        double ySpeed = -Math.cos(rotation) * speed;
+//
+//        bullet.setDx(xSpeed);
+//        bullet.setDy(ySpeed);
+//        checkConstraints(bullet, bullet.getWidth(), bullet.getHeight());
+//    }
 
     public void moveTank(Tank tank)
     {
@@ -54,11 +55,18 @@ public class GameManager
 
     public void shoot(Tank tank)
     {
-        double spawnX = tank.getX();
+        double spawnX = tank.getX() - (tank.getWidth());
         double spawnY = tank.getY() - (tank.getHeight() / 2);
         Map map = MapContainer.getInstance().getMap();
         Constraint constraint = new Constraint(0, 0, map.getMap().getWidth(), map.getMap().getHeight());
         Bullet bullet = new Bullet(tank, tank.getBulletType(), spawnX, spawnY, tank.getRotation(), constraint, null);
+        // Use sin and cos to orient the bullet int the right direction
+        double speed = bullet.getSpeed();
+        double rotation = Math.toRadians(bullet.getRotation());
+        double xSpeed = Math.sin(rotation) * speed;
+        double ySpeed = -Math.cos(rotation) * speed;
+        bullet.setDx(xSpeed);
+        bullet.setDy(ySpeed);
 
         BulletContainer.getInstance().add(bullet);
     }
@@ -67,8 +75,9 @@ public class GameManager
      * Checks whether player is violating the constraints. It then "recalibrates the location of the player"
      * @param sprite Player to check for
      */
-    public void checkConstraints(Sprite sprite, int spriteWidth, int spriteHeight)
+    public boolean checkConstraints(Sprite sprite, int spriteWidth, int spriteHeight)
     {
+        boolean violationState = false;
         // Fetch relevant data
         if (sprite.getConstraint() == null)
             System.out.println("Sprite constraint not inititalized?");
@@ -83,19 +92,39 @@ public class GameManager
 
             if (spriteX <= minX)
             {
+                violationState = true;
                 sprite.setX(minX);
-            } else if (spriteX >= maxX)
+            }
+            else if (spriteX >= maxX)
             {
+                violationState = true;
                 sprite.setX(maxX);
             }
 
             if (spriteY <= minY)
             {
+                violationState = true;
                 sprite.setY(minY);
-            } else if (spriteY >= maxY)
+            }
+            else if (spriteY >= maxY)
             {
+                violationState = true;
                 sprite.setY(maxY);
             }
+        }
+        return violationState;
+    }
+
+    public void checkBulletConstraints(Bullet bullet, ArrayList<Bullet> garbage)
+    {
+        if (checkConstraints(bullet, bullet.getWidth(), bullet.getHeight()))
+        {
+            System.out.println("----- Bullet violating ----- \n"
+                + "Bullet id: " + bullet.getId()
+                + "\nBulletX: " + bullet.getX()
+                + "\nBulletY: " + bullet.getY());
+
+            garbage.add(bullet);
         }
     }
 
@@ -154,4 +183,14 @@ public class GameManager
         }
     }
 
+    public void bulletUpdateInitialState(Bullet bullet, boolean state)
+    {
+        bullet.setInitialState(state);
+    }
+
+    public void updateBulletLocation(Bullet bullet, Point point)
+    {
+        bullet.setX(point.getX());
+        bullet.setY(point.getY());
+    }
 }

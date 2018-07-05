@@ -4,8 +4,12 @@ import java.awt.image.BufferedImage;
 
 public class Bullet extends Sprite implements Drawable
 {
+    private static int          uid = 0;
     private final int           SPEED = 10;
-    private BufferedImage image;
+
+    private int                 id;
+    private BufferedImage       image;
+    private boolean             initialState;
 
     // Which player do I belong to?
     private Tank                tank;
@@ -16,8 +20,12 @@ public class Bullet extends Sprite implements Drawable
         super(x, y, rotation, constraint, collision);
         this.image      = loadImage(imagePath);
         this.tank       = tank;
+        initialState = true;
+        id = uid;
+        uid++;
     }
 
+    public int getId() { return id; }
     public int getWidth() { return image.getWidth(); }
     public int getHeight() { return image.getHeight(); }
     public BufferedImage getImage() { return image; }
@@ -26,6 +34,16 @@ public class Bullet extends Sprite implements Drawable
 
     public double getSpeed()
     {
-        return speed;
+        return SPEED;
+    }
+
+    public boolean isInitialState()
+    {
+        return initialState;
+    }
+
+    public void setInitialState(boolean initialState)
+    {
+        this.initialState = initialState;
     }
 }

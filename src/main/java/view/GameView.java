@@ -2,6 +2,7 @@ package view;
 
 import manager.GameManager;
 import model.*;
+import model.Point;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,11 +13,14 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.ListIterator;
 
 public class GameView extends JPanel implements ActionListener
 {
     private int                 mapWidth;
     private int                 mapHeight;
+    private int                 count = 0;
     private final int           DELAY = 20;
     private Timer               timer;
     private Map                 map;
@@ -86,10 +90,27 @@ public class GameView extends JPanel implements ActionListener
         g.drawImage(map.getMap(), 0, 0, null);
 
         drawPlayer(g2d, player);
-        for (Bullet bullet : bullets)
+//        for (Bullet bullet : bullets)
+//        {
+//            drawBullet(g2d, player, bullet);
+//        }
+
+        ListIterator<Bullet> it = bullets.listIterator();
+        ArrayList<Bullet> garbage = new ArrayList<>();
+
+        while (it.hasNext())
         {
+            Bullet bullet = it.next();
             drawBullet(g2d, player, bullet);
+            gameManager.checkBulletConstraints(bullet, garbage);
+            System.out.println("-----------------------------");
+            System.out.println("bulletId: " + bullet.getId());
+            System.out.println("x: " + bullet.getX());
+            System.out.println("y: " + bullet.getY());
+            //gameManager.move(bullet);
         }
+
+        disposeBullets(garbage);
 
         // Draw players from server.
 //        for (Tank tank : tanks)
@@ -98,6 +119,14 @@ public class GameView extends JPanel implements ActionListener
 //        }
 
         g2d.dispose();
+    }
+
+    public void disposeBullets(ArrayList<Bullet> garbage)
+    {
+        for (Bullet bullet : garbage)
+        {
+            bullets.remove(bullet);
+        }
     }
 
     /**
@@ -116,7 +145,7 @@ public class GameView extends JPanel implements ActionListener
         // TODO: Make the cannon drawable
         BufferedImage cannonImage = tank.getTankCannon();
         // Sets the location of the image, we want it in the middle of the tank.
-        AffineTransform cannonAt = AffineTransform.getTranslateInstance(tank.getX() + cannonImage.getWidth()/2, tank.getY() + cannonImage.getHeight());
+        AffineTransform cannonAt = AffineTransform.getTranslateInstance(tank.getX() - cannonImage.getWidth()/2, tank.getY() - cannonImage.getHeight());
         // Calculates rotation. We want the rotation to happen at the bottom of the picture, ergo
         // .getHeight is not divided by 2
         cannonAt.rotate(Math.toRadians(tank.getRotation()), cannonImage.getWidth()/2, cannonImage.getHeight());
@@ -134,12 +163,40 @@ public class GameView extends JPanel implements ActionListener
         g2d.drawImage(drawable.getImage(), baseAt, null);
 
     }
-
+    // Draws bullet initially
+    // We need a bullet drawer that does it after the
     public void drawBullet(Graphics2D g2d, Tank tank, Bullet bullet)
     {
-        AffineTransform baseAt = AffineTransform.getTranslateInstance(tank.getX() - bullet.getWidth()/2, tank.getY() - bullet.getHeight());
-        baseAt.rotate(Math.toRadians(bullet.getRotation()), bullet.getWidth()/2, bullet.getHeight()/2);
+        // Draw a test oval.
+//        g2d.setColor(Color.RED);
+//        g2d.drawOval((int)tank.getX() - tank.getWidth()/2, (int)tank.getY(), 1, 1);
 
+        // We want to rotate around the base.
+        // We need to find the x and y of the base. Since we've coupled the cannon on, this calculation
+        // is necessary to achieve wanted result
+
+        AffineTransform baseAt = null;
+        // Sets the x to the center of the tankBase, which is our spawnPoint
+        if (bullet.isInitialState())
+        {
+            int heightDiff = tank.getHeight() - tank.getTankBase().getHeight();
+            int widthDiff = tank.getWidth() - tank.getTankBase().getWidth();
+            double spawnX = tank.getX() - widthDiff;
+            double spawnY = tank.getY() - heightDiff;
+
+            baseAt = AffineTransform.getTranslateInstance(spawnX - (bullet.getWidth() / 2), spawnY - (bullet.getHeight() / 2));
+            bullet.setX(spawnX);
+            bullet.setY(spawnY);
+            gameManager.updateBulletLocation(bullet, new Point(spawnX, spawnY));
+            gameManager.bulletUpdateInitialState(bullet,false);
+        }
+        else
+        {
+            baseAt = AffineTransform.getTranslateInstance(bullet.getX() - (bullet.getWidth() / 2), bullet.getY() - (bullet.getHeight() / 2));
+        }
+
+        // Orients the bullet around this point
+        baseAt.rotate(Math.toRadians(bullet.getRotation()), bullet.getWidth()/2, bullet.getHeight()/2);
         g2d.drawImage(bullet.getImage(), baseAt, null);
 
     }
@@ -148,8 +205,13 @@ public class GameView extends JPanel implements ActionListener
     public void actionPerformed(ActionEvent e)
     {
         gameManager.moveTank(player);
+
         for (Bullet bullet : BulletContainer.getInstance().getBullets())
         {
+            System.out.println("-----------------------------");
+            System.out.println("bulletId: " + bullet.getId());
+            System.out.println("x: " + bullet.getX());
+            System.out.println("y: " + bullet.getY());
             gameManager.move(bullet);
         }
         update();
@@ -175,8 +237,7 @@ public class GameView extends JPanel implements ActionListener
             @Override
             public void run()
             {
-                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-                Point windowLocation = new Point();
+                //Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
                 JFrame frame = new JFrame();
                 frame.setContentPane(new GameView());
 //                frame.setLocation((int)screenSize.getWidth()/2 - mapWidth/2, (int)screenSize.getHeight()/2 - mapHeight/2);
