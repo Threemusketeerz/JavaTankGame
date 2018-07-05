@@ -116,7 +116,7 @@ public class GameView extends JPanel implements ActionListener
         // TODO: Make the cannon drawable
         BufferedImage cannonImage = tank.getTankCannon();
         // Sets the location of the image, we want it in the middle of the tank.
-        AffineTransform cannonAt = AffineTransform.getTranslateInstance(tank.getX() - cannonImage.getWidth()/2, tank.getY() - cannonImage.getHeight());
+        AffineTransform cannonAt = AffineTransform.getTranslateInstance(tank.getX() + cannonImage.getWidth()/2, tank.getY() + cannonImage.getHeight());
         // Calculates rotation. We want the rotation to happen at the bottom of the picture, ergo
         // .getHeight is not divided by 2
         cannonAt.rotate(Math.toRadians(tank.getRotation()), cannonImage.getWidth()/2, cannonImage.getHeight());
@@ -126,7 +126,9 @@ public class GameView extends JPanel implements ActionListener
 
     public void drawDrawable(Graphics2D g2d, Drawable drawable)
     {
-        AffineTransform baseAt = AffineTransform.getTranslateInstance(drawable.getX() - drawable.getWidth()/2, drawable.getY() - drawable.getHeight()/2);
+        AffineTransform baseAt = AffineTransform.getTranslateInstance(drawable.getX() - drawable.getWidth()/2,
+                                                                      drawable.getY() - drawable.getHeight()/2);
+
         baseAt.rotate(Math.toRadians(drawable.getRotation()), drawable.getWidth()/2, drawable.getHeight()/2);
 
         g2d.drawImage(drawable.getImage(), baseAt, null);
