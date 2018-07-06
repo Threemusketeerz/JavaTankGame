@@ -4,7 +4,7 @@ public class MapContainer
 {
     private static MapContainer ourInstance = new MapContainer();
     // Container with only 1 map.
-    public Map map;
+    public TankMap map;
 
     public static MapContainer getInstance()
     {
@@ -16,12 +16,12 @@ public class MapContainer
         map = null;
     }
 
-    public void setMap(Map map)
+    public void setMap(TankMap map)
     {
         this.map = map;
     }
 
-    public Map getMap()
+    public TankMap getMap()
     {
         return map;
     }

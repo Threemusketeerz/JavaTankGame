@@ -13,7 +13,6 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.ListIterator;
 
 public class GameView extends JPanel implements ActionListener
@@ -23,7 +22,7 @@ public class GameView extends JPanel implements ActionListener
     private int                 count = 0;
     private final int           DELAY = 20;
     private Timer               timer;
-    private Map                 map;
+    private TankMap map;
     private Tank                player;
     private ArrayList<Tank>     tanks;
     private ArrayList<Bullet>   bullets;
@@ -41,7 +40,7 @@ public class GameView extends JPanel implements ActionListener
         bullets = BulletContainer.getInstance().getBullets();
 
         // Create map.
-        MapContainer.getInstance().setMap(new Map("/map2.png"));
+        MapContainer.getInstance().setMap(new TankMap("/map2.png"));
         // Assign it.
         map = MapContainer.getInstance().getMap();
 
@@ -88,9 +87,7 @@ public class GameView extends JPanel implements ActionListener
         Graphics2D g2d = (Graphics2D) g.create();
         // Draw map
         g.drawImage(map.getMap(), 0, 0, null);
-
-        drawPlayer(g2d, player);
-//        for (Bullet bullet : bullets)
+        //        for (Bullet bullet : bullets)
 //        {
 //            drawBullet(g2d, player, bullet);
 //        }
@@ -107,11 +104,10 @@ public class GameView extends JPanel implements ActionListener
             System.out.println("bulletId: " + bullet.getId());
             System.out.println("x: " + bullet.getX());
             System.out.println("y: " + bullet.getY());
-            //gameManager.move(bullet);
         }
 
         disposeBullets(garbage);
-
+        drawPlayer(g2d, player);
         // Draw players from server.
 //        for (Tank tank : tanks)
 //        {
@@ -167,14 +163,10 @@ public class GameView extends JPanel implements ActionListener
     // We need a bullet drawer that does it after the
     public void drawBullet(Graphics2D g2d, Tank tank, Bullet bullet)
     {
-        // Draw a test oval.
-//        g2d.setColor(Color.RED);
-//        g2d.drawOval((int)tank.getX() - tank.getWidth()/2, (int)tank.getY(), 1, 1);
 
         // We want to rotate around the base.
         // We need to find the x and y of the base. Since we've coupled the cannon on, this calculation
         // is necessary to achieve wanted result
-
         AffineTransform baseAt = null;
         // Sets the x to the center of the tankBase, which is our spawnPoint
         if (bullet.isInitialState())
@@ -205,6 +197,7 @@ public class GameView extends JPanel implements ActionListener
     public void actionPerformed(ActionEvent e)
     {
         gameManager.moveTank(player);
+        gameManager.shoot(player);
 
         for (Bullet bullet : BulletContainer.getInstance().getBullets())
         {

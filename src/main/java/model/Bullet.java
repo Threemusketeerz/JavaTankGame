@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 public class Bullet extends Sprite implements Drawable
 {
     private static int          uid = 0;
-    private final int           SPEED = 10;
+    private static final int    SPEED = 10;
 
     private int                 id;
     private BufferedImage       image;
@@ -13,7 +13,6 @@ public class Bullet extends Sprite implements Drawable
 
     // Which player do I belong to?
     private Tank                tank;
-    private double              speed;
 
     public Bullet(Tank tank, String imagePath, double x, double y, double rotation, Constraint constraint, Collision collision)
     {

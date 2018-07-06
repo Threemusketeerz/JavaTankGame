@@ -9,8 +9,13 @@ public class Tank extends Sprite implements Drawable
     private BufferedImage       tankBase;
     private BufferedImage       tankCannon;
     private String              description;
-    private boolean             driving;
     private Collision           collision;
+    private boolean             drivingForwards, drivingBackwards;
+    private boolean             shooting;
+    // How long does the Tank have to wait before being able to shoot again?
+    private long                rateOfFire;
+    private long                lastFired;
+
 
 
 
@@ -21,29 +26,46 @@ public class Tank extends Sprite implements Drawable
         this.tankCannon         = loadImage(tankCannon);
         this.bulletType         = bulletType;
         this.description        = description;
-        this.driving            = false;
+        // Tanks don't start off drivingForwards or shooting
+        this.drivingForwards    = false;
+        this.drivingBackwards   = false;
+        this.shooting           = false;
+
+        this.rateOfFire         = 300;
+        this.lastFired          = 0;
     }
 
-// TODO: Broken, and should not work for now. Remove?
-//    public Tank(String image, String description, int x, int y)
-//    {
-//        this(image, null, description, x, y, 0.0, null);
-//    }
-
+    // Accessors
     public int getWidth() { return tankBase.getWidth(); }
     public int getHeight() { return tankBase.getHeight(); }
     @Override
     public BufferedImage getImage() { return tankBase; }
     public String getBulletType() { return bulletType; }
-//    @Override
-//    public Constraint getConstraint() { return constraint; }
-
-    public void setIsDriving(boolean state) { this.driving = state; }
-
     public BufferedImage getTankBase() { return tankBase; }
     public BufferedImage getTankCannon() { return tankCannon; }
-    public boolean isDriving() { return driving; }
+    public long getRateOfFire() { return rateOfFire; }
+    public long getLastFired() { return lastFired; }
+    public boolean isDrivingForwards() { return drivingForwards; }
+    public boolean isShooting() { return shooting; }
 
+    // Mutators
+    public void setIsDrivingForwards(boolean state)
+    {
+        drivingBackwards = false;
+        this.drivingForwards = state;
+    }
+    public void shooting(boolean state) { this.shooting = state; }
+    public void setRateOfFire(long rateOfFire) { this.rateOfFire = rateOfFire; }
+    public void setLastFired(long lastFired) { this.lastFired = lastFired; }
 
+    public void setIsDrivingBackwards(boolean isDrivingBackwards)
+    {
+        drivingForwards = false;
+        this.drivingBackwards = isDrivingBackwards;
+    }
 
+    public boolean isDrivingBackwards()
+    {
+        return drivingBackwards;
+    }
 }
