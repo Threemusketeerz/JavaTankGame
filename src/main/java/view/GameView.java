@@ -3,6 +3,8 @@ package view;
 import manager.GameManager;
 import model.*;
 import model.Point;
+import model.TankMap;
+import parser.Spritesheet;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,6 +14,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
@@ -22,7 +25,8 @@ public class GameView extends JPanel implements ActionListener
     private int                 count = 0;
     private final int           DELAY = 20;
     private Timer               timer;
-    private TankMap map;
+    private TankMap             map;
+    private MapView             mapView;
     private Tank                player;
     private ArrayList<Tank>     tanks;
     private ArrayList<Bullet>   bullets;
@@ -39,13 +43,35 @@ public class GameView extends JPanel implements ActionListener
         tanks = new ArrayList<>();
         bullets = BulletContainer.getInstance().getBullets();
 
-        // Create map.
-        MapContainer.getInstance().setMap(new TankMap("/map2.png"));
-        // Assign it.
-        map = MapContainer.getInstance().getMap();
+        File testFile = new File(getClass().getResource("/Tank/Spritesheet/sheet_tanks.png").toString().replace("file:", ""));
 
-        mapWidth = map.getMap().getWidth();
-        mapHeight = map.getMap().getHeight();
+        if (testFile.exists())
+            System.out.println(testFile.toString() + " exists!!!!!");
+
+        // load the layers
+        try
+        {
+            // Load the json file to read data from. Replace "file:"
+            TankMap file = new TankMap(getClass().getResource("/Maps/RenderTesters2.json").toString().replace("file:", ""));
+//            Spritesheet spriteSheet = new Spritesheet(getClass().getResource("Tank/Spritesheet/sheet_tanks.png").toString().replace("file:", ""));
+            Spritesheet spriteSheet = new Spritesheet("/Tank/Spritesheet/sheet_tanks.png");
+
+            mapView = new MapView(file, spriteSheet);
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        setPreferredSize(new Dimension(800, 600));
+//        mapView = new MapView(map.getMap());
+        // Create map.
+//        MapContainer.getInstance().setMap(new TankMap("/map2.png"));
+        // Assign it.
+//        map = MapContainer.getInstance().getMap();
+
+//        mapWidth = map.getMap().getWidth();
+//        mapHeight = map.getMap().getHeight();
 
         player = new Tank("/Tank/PNG/Tanks/tankBlue.png",
                 "/Tank/PNG/Tanks/barrelBlue.png",
@@ -60,7 +86,7 @@ public class GameView extends JPanel implements ActionListener
         setFocusable(true);
         setDoubleBuffered(true);
 
-        setPreferredSize(new Dimension(mapWidth, mapHeight));
+//        setPreferredSize(new Dimension(mapWidth, mapHeight));
 
         timer = new Timer(DELAY, this);
         timer.start();
@@ -86,28 +112,29 @@ public class GameView extends JPanel implements ActionListener
 
         Graphics2D g2d = (Graphics2D) g.create();
         // Draw map
-        g.drawImage(map.getMap(), 0, 0, null);
+        mapView.paintComponent(g2d);
+//        g.drawImage(map.getMap(), 0, 0, null);
         //        for (Bullet bullet : bullets)
 //        {
 //            drawBullet(g2d, player, bullet);
 //        }
 
-        ListIterator<Bullet> it = bullets.listIterator();
-        ArrayList<Bullet> garbage = new ArrayList<>();
-
-        while (it.hasNext())
-        {
-            Bullet bullet = it.next();
-            drawBullet(g2d, player, bullet);
-            gameManager.checkBulletConstraints(bullet, garbage);
-            System.out.println("-----------------------------");
-            System.out.println("bulletId: " + bullet.getId());
-            System.out.println("x: " + bullet.getX());
-            System.out.println("y: " + bullet.getY());
-        }
-
-        disposeBullets(garbage);
-        drawPlayer(g2d, player);
+//        ListIterator<Bullet> it = bullets.listIterator();
+//        ArrayList<Bullet> garbage = new ArrayList<>();
+//
+//        while (it.hasNext())
+//        {
+//            Bullet bullet = it.next();
+//            drawBullet(g2d, player, bullet);
+//            gameManager.checkBulletConstraints(bullet, garbage);
+////            System.out.println("-----------------------------");
+////            System.out.println("bulletId: " + bullet.getId());
+////            System.out.println("x: " + bullet.getX());
+////            System.out.println("y: " + bullet.getY());
+//        }
+//
+//        disposeBullets(garbage);
+//        drawPlayer(g2d, player);
         // Draw players from server.
 //        for (Tank tank : tanks)
 //        {

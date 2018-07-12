@@ -82,7 +82,7 @@ public class GameManager
             double spawnX = tank.getX() - (tank.getWidth());
             double spawnY = tank.getY() - (tank.getHeight() / 2);
             TankMap map = MapContainer.getInstance().getMap();
-            Constraint constraint = new Constraint(0, 0, map.getMap().getWidth(), map.getMap().getHeight());
+            Constraint constraint = new Constraint(0, 0, map.getWidth(), map.getHeight());
             Bullet bullet = new Bullet(tank, tank.getBulletType(), spawnX, spawnY, tank.getRotation(), constraint, null);
             // Use sin and cos to orient the bullet int the right direction
             double speed = bullet.getSpeed();
