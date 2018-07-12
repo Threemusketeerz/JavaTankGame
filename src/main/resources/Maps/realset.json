@@ -1,0 +1,40 @@
+{ "columns":8,
+ "image":"..\/Tank\/Spritesheet\/sheet_tanks.png",
+ "imageheight":512,
+ "imagewidth":1024,
+ "margin":0,
+ "name":"realset",
+ "spacing":0,
+ "terrains":[
+        {
+         "name":"ground",
+         "tile":-1
+        }, 
+        {
+         "name":"grass",
+         "tile":-1
+        }, 
+        {
+         "name":"cbble",
+         "tile":-1
+        }],
+ "tilecount":32,
+ "tileheight":128,
+ "tiles":
+    {
+     "0":
+        {
+         "terrain":[0, 0, 0, 0]
+        },
+     "16":
+        {
+         "terrain":[2, 2, 2, 2]
+        },
+     "8":
+        {
+         "terrain":[1, 1, 1, 1]
+        }
+    },
+ "tilewidth":128,
+ "type":"tileset"
+}
