@@ -1,6 +1,8 @@
 package manager;
 
 import model.*;
+import util.Point;
+import view.GameView;
 
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -32,10 +34,7 @@ public class GameManager
         double speed = GameRules.SPEED.getValue();
         double rotation = Math.toRadians(tank.getRotation());
         double xSpeed = -Math.sin(rotation) * speed;
-//        System.out.println("X speed: " + xSpeed);
         double ySpeed = Math.cos(rotation) * speed;
-//        System.out.println("Angle: " + player.getBufferRotation());
-//        System.out.println("Y speed: " + ySpeed);
         tank.setDx(xSpeed);
         tank.setDy(ySpeed);
         checkConstraints(tank, tank.getWidth(), tank.getHeight());
@@ -43,7 +42,8 @@ public class GameManager
 
     /**
      * Specific logic for moving a tank.
-     * @param tank      Tank to move.
+     *
+     * @param tank Tank to move.
      */
     public void moveTank(Tank tank)
     {
@@ -55,12 +55,18 @@ public class GameManager
                 driveBackward(tank);
             tank.setBufferRotation(tank.getRotation() + tank.getDeltaRotation());
             move(tank);
+
+            Point cameraPos = tank.getCamera().getOffset();
+            // Set new camera position
+            tank.getCamera().setOffset(new Point(tank.getX() - GameView.WIDTH / 2,
+                    tank.getY() - GameView.HEIGHT / 2));
         }
     }
 
     /**
      * Calculate new position
-     * @param sprite    Sprite to move
+     *
+     * @param sprite Sprite to move
      */
     public void move(Sprite sprite)
     {
@@ -70,20 +76,24 @@ public class GameManager
 
     /**
      * Shoots from the tank.
-     * @param tank      Tank that's shooting.
+     *
+     * @param tank Tank that's shooting.
      */
     public void shoot(Tank tank)
     {
 
-        if((System.currentTimeMillis() - tank.getLastFired()) >= tank.getRateOfFire() && tank.isShooting())
+        if ((System.currentTimeMillis() - tank.getLastFired()) >= tank.getRateOfFire() && tank.isShooting())
         {
             tank.setLastFired(System.currentTimeMillis());
 
             double spawnX = tank.getX() - (tank.getWidth());
             double spawnY = tank.getY() - (tank.getHeight() / 2);
             TankMap map = MapContainer.getInstance().getMap();
-            Constraint constraint = new Constraint(0, 0, map.getWidth(), map.getHeight());
-            Bullet bullet = new Bullet(tank, tank.getBulletType(), spawnX, spawnY, tank.getRotation(), constraint, null);
+            Constraint constraint = new Constraint(0, 0, map.getWidthInPixels(), map.getHeightInPixels());
+            Bullet bullet = new Bullet(tank, tank.getBulletType(),
+                    spawnX,
+                    spawnY,
+                    tank.getRotation(), constraint, null);
             // Use sin and cos to orient the bullet int the right direction
             double speed = bullet.getSpeed();
             double rotation = Math.toRadians(bullet.getRotation());
@@ -98,9 +108,10 @@ public class GameManager
 
     /**
      * Checks whether player is violating the constraints. It then "recalibrates the location of the player"
+     *
      * @param sprite Player to check for
      */
-    public boolean checkConstraints(Sprite sprite, int spriteWidth, int spriteHeight)
+    public boolean checkConstraints(Sprite sprite, int spriteWidth, int spriteHeight, double xOffset, double yOffset)
     {
         boolean violationState = false;
         // Fetch relevant data
@@ -108,10 +119,10 @@ public class GameManager
             System.out.println("Sprite constraint not inititalized?");
         else
         {
-            double minX = sprite.getConstraint().getMinX() + spriteWidth / 2;
-            double minY = sprite.getConstraint().getMinY() + spriteHeight / 2;
-            double maxX = sprite.getConstraint().getMaxX() - spriteWidth / 2;
-            double maxY = sprite.getConstraint().getMaxY() - spriteHeight / 2;
+            double minX = sprite.getConstraint().getMinX() + spriteWidth / 2 - xOffset;
+            double minY = sprite.getConstraint().getMinY() + spriteHeight / 2 - yOffset;
+            double maxX = sprite.getConstraint().getMaxX() - spriteWidth / 2 - xOffset;
+            double maxY = sprite.getConstraint().getMaxY() - spriteHeight / 2 - yOffset;
             double spriteX = sprite.getX();
             double spriteY = sprite.getY();
 
@@ -119,8 +130,7 @@ public class GameManager
             {
                 violationState = true;
                 sprite.setX(minX);
-            }
-            else if (spriteX >= maxX)
+            } else if (spriteX >= maxX)
             {
                 violationState = true;
                 sprite.setX(maxX);
@@ -130,8 +140,7 @@ public class GameManager
             {
                 violationState = true;
                 sprite.setY(minY);
-            }
-            else if (spriteY >= maxY)
+            } else if (spriteY >= maxY)
             {
                 violationState = true;
                 sprite.setY(maxY);
@@ -142,17 +151,24 @@ public class GameManager
 
     public void checkBulletConstraints(Bullet bullet, ArrayList<Bullet> garbage)
     {
-        if (checkConstraints(bullet, bullet.getWidth(), bullet.getHeight()))
+        double xOffset = bullet.getTank().getCamera().getOffset().getX();
+        double yOffset = bullet.getTank().getCamera().getOffset().getY();
+
+        if (checkConstraints(bullet, bullet.getWidth(), bullet.getHeight(), xOffset, yOffset))
         {
-            System.out.println("----- Bullet violating ----- \n"
-                + "Bullet id: " + bullet.getId()
-                + "\nBulletX: " + bullet.getX()
-                + "\nBulletY: " + bullet.getY());
+//            System.out.println("----- Bullet violating ----- \n"
+//                    + "Bullet id: " + bullet.getId()
+//                    + "\nBulletX: " + bullet.getX()
+//                    + "\nBulletY: " + bullet.getY());
 
             garbage.add(bullet);
         }
     }
 
+    public boolean checkConstraints(Sprite sprite, int spriteWidth, int spriteHeight)
+    {
+        return checkConstraints(sprite, spriteWidth, spriteHeight, 0, 0);
+    }
 
     // TODO: Reevaluate whether to keep key presses in Controller layer. We might want his this somewhere else.
     public void keyPressed(Tank tank, KeyEvent e)

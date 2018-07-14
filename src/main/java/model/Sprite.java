@@ -42,7 +42,7 @@ public class Sprite
     public double getDeltaRotation() { return deltaRotation; }
     public double getDx() { return dx; }
     public double getDy() { return dy; }
-    public Constraint getConstraint() { return this.constraint; }
+    public Constraint getConstraint() { return constraint; }
     public Collision getCollision() { return collision; }
 
     public static BufferedImage loadImage(String imagePath)

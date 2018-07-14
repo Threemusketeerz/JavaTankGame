@@ -28,7 +28,7 @@ public class Bullet extends Sprite implements Drawable
     public int getWidth() { return image.getWidth(); }
     public int getHeight() { return image.getHeight(); }
     public BufferedImage getImage() { return image; }
-    public Sprite getTank() { return tank; }
+    public Tank getTank() { return tank; }
     public void setTank(Tank tank) { this.tank = tank; }
 
     public double getSpeed()

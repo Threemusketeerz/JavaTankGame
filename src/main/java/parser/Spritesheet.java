@@ -22,14 +22,7 @@ public class Spritesheet
         int heightInPixels = height * tileHeight;
 
         int x = (positionToFetch - positionOffset - 1) % width;
-        // attempt 1
-//        int x = (((positionToFetch * tileWidth) - 1) % widthInPixels)/tileWidth;
-        // attempt 2
-//        int x = tileWidth / positionToFetch;
-
         int y = (positionToFetch - positionOffset) / width;
-//        if (y > 0)
-//            y -= 1;
 
         return spriteSheet.getSubimage(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
     }

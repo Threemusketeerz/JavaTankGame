@@ -1,7 +1,5 @@
 package model;
 
-import parser.Spritesheet;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.*;
@@ -20,12 +18,14 @@ public class TankMap
     {
         this.path = path;
 
-        update(path);
+        loadJson(path);
     }
 
     public String getPath() { return path; }
     public int getWidth() { return width; }
+    public int getWidthInPixels() { return width * tileWidth; }
     public int getHeight() { return height; }
+    public int getHeightInPixels() { return height * tileHeight; }
     public int getTileWidth() { return tileWidth; }
     public int getTileHeight() { return tileHeight; }
     public JSONArray getLayers() { return layers; }
@@ -36,7 +36,7 @@ public class TankMap
     /**
      * Reload the json file.
      */
-    public void update(String path) throws ParseException, IOException
+    public void loadJson(String path) throws ParseException, IOException
     {
         this.path = path;
 

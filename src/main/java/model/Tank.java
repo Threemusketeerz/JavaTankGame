@@ -10,6 +10,7 @@ public class Tank extends Sprite implements Drawable
     private BufferedImage       tankCannon;
     private String              description;
     private Collision           collision;
+    private Camera              camera;
     private boolean             drivingForwards, drivingBackwards;
     private boolean             shooting;
     // How long does the Tank have to wait before being able to shoot again?
@@ -45,6 +46,7 @@ public class Tank extends Sprite implements Drawable
     public BufferedImage getTankCannon() { return tankCannon; }
     public long getRateOfFire() { return rateOfFire; }
     public long getLastFired() { return lastFired; }
+    public Camera getCamera() { return camera; }
     public boolean isDrivingForwards() { return drivingForwards; }
     public boolean isShooting() { return shooting; }
 
@@ -68,4 +70,6 @@ public class Tank extends Sprite implements Drawable
     {
         return drivingBackwards;
     }
+
+    public void setCamera(Camera camera) { this.camera = camera; }
 }

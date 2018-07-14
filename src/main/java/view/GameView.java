@@ -2,7 +2,7 @@ package view;
 
 import manager.GameManager;
 import model.*;
-import model.Point;
+import util.Point;
 import model.TankMap;
 import parser.Spritesheet;
 
@@ -20,10 +20,13 @@ import java.util.ListIterator;
 
 public class GameView extends JPanel implements ActionListener
 {
+    public static final int     WIDTH = 1200, HEIGHT = 800;
+    // Framerate. Essentially, 1 second = 1000ms / FRAME_RATE = DELAY.
+    public static final int     FRAME_RATE = 60;
+    private static final int    DELAY = 1000/FRAME_RATE;
     private int                 mapWidth;
     private int                 mapHeight;
     private int                 count = 0;
-    private final int           DELAY = 20;
     private Timer               timer;
     private TankMap             map;
     private MapView             mapView;
@@ -52,35 +55,37 @@ public class GameView extends JPanel implements ActionListener
         try
         {
             // Load the json file to read data from. Replace "file:"
-            TankMap file = new TankMap(getClass().getResource("/Maps/RenderTesters2.json").toString().replace("file:", ""));
-//            Spritesheet spriteSheet = new Spritesheet(getClass().getResource("Tank/Spritesheet/sheet_tanks.png").toString().replace("file:", ""));
+            map = new TankMap(getClass().getResource("/Maps/RenderTesters2.json").toString().replace("file:", ""));
             Spritesheet spriteSheet = new Spritesheet("/Tank/Spritesheet/sheet_tanks.png");
 
-            mapView = new MapView(file, spriteSheet);
+            mapView = new MapView(map, spriteSheet);
 
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
-        setPreferredSize(new Dimension(800, 600));
+        setPreferredSize(new Dimension(WIDTH, HEIGHT));
 //        mapView = new MapView(map.getMap());
         // Create map.
-//        MapContainer.getInstance().setMap(new TankMap("/map2.png"));
+        // TODO STATE PATTERN!!!!!
+        MapContainer.getInstance().setMap(map);
         // Assign it.
 //        map = MapContainer.getInstance().getMap();
 
-//        mapWidth = map.getMap().getWidth();
-//        mapHeight = map.getMap().getHeight();
+        mapWidth = map.getWidthInPixels();
+        mapHeight = map.getHeightInPixels();
 
         player = new Tank("/Tank/PNG/Tanks/tankBlue.png",
                 "/Tank/PNG/Tanks/barrelBlue.png",
                 "/Tank/PNG/Bullets/bulletBlue.png",
                 "Player 1",
-                mapWidth / 2, mapHeight / 2, 0.0,
+//                map.getWidthInPixels()/2, map.getHeightInPixels()/ 2, 0.0,
+                WIDTH/2, HEIGHT/2, 0.0,
                 new Constraint(0, 0, mapWidth, mapHeight),
                 null);
         player.setConstraint(new Constraint(0, 0, mapWidth, mapHeight));
+        player.setCamera(new Camera(new Point(player.getX() - WIDTH/2, player.getY() - HEIGHT/2)));
 
         addKeyListener(new TAdapter());
         setFocusable(true);
@@ -107,39 +112,36 @@ public class GameView extends JPanel implements ActionListener
         repaint();
     }
 
+    // Essentially or render() method
     public void paintComponent(Graphics g)
     {
 
         Graphics2D g2d = (Graphics2D) g.create();
+        ArrayList<Bullet> garbage = new ArrayList<>();
         // Draw map
-        mapView.paintComponent(g2d);
-//        g.drawImage(map.getMap(), 0, 0, null);
-        //        for (Bullet bullet : bullets)
-//        {
-//            drawBullet(g2d, player, bullet);
-//        }
+        mapView.paintComponent(g2d, player);
 
-//        ListIterator<Bullet> it = bullets.listIterator();
-//        ArrayList<Bullet> garbage = new ArrayList<>();
+
+        ListIterator<Bullet> it = bullets.listIterator();
+
+        while (it.hasNext())
+        {
+            Bullet bullet = it.next();
+            drawBullet(g2d, player, bullet);
+            gameManager.checkBulletConstraints(bullet, garbage);
+//            System.out.println("-----------------------------");
+//            System.out.println("bulletId: " + bullet.getId());
+//            System.out.println("x: " + bullet.getX());
+//            System.out.println("y: " + bullet.getY());
+        }
 //
-//        while (it.hasNext())
-//        {
-//            Bullet bullet = it.next();
-//            drawBullet(g2d, player, bullet);
-//            gameManager.checkBulletConstraints(bullet, garbage);
-////            System.out.println("-----------------------------");
-////            System.out.println("bulletId: " + bullet.getId());
-////            System.out.println("x: " + bullet.getX());
-////            System.out.println("y: " + bullet.getY());
-//        }
-//
-//        disposeBullets(garbage);
-//        drawPlayer(g2d, player);
-        // Draw players from server.
-//        for (Tank tank : tanks)
-//        {
-//            drawPlayer(g2d, tank);
-//        }
+
+        drawPlayer(g2d, player);
+
+//        System.out.println("Player X: " + player.getX());
+//        System.out.println("Player Y: " + player.getY());
+
+        disposeBullets(garbage);
 
         g2d.dispose();
     }
@@ -160,7 +162,15 @@ public class GameView extends JPanel implements ActionListener
     public void drawPlayer(Graphics2D g2d, Tank tank)
     {
         // Draws the tank base.
-        drawDrawable(g2d, tank);
+//        drawDrawable(g2d, tank);
+        // We need to draw the tank with the camera offset.
+        AffineTransform baseAt = AffineTransform.getTranslateInstance(
+                (tank.getX() - tank.getWidth()/2) - tank.getCamera().getOffset().getX(),
+                (tank.getY() - tank.getHeight()/2) - tank.getCamera().getOffset().getY());
+
+        baseAt.rotate(Math.toRadians(tank.getRotation()), tank.getWidth()/2, tank.getHeight()/2);
+
+        g2d.drawImage(tank.getImage(), baseAt, null);
 
         // Draws cannon onto tank
         // This is a bit finicky. This should probably also be put into the drawable. Nevertheless
@@ -168,7 +178,8 @@ public class GameView extends JPanel implements ActionListener
         // TODO: Make the cannon drawable
         BufferedImage cannonImage = tank.getTankCannon();
         // Sets the location of the image, we want it in the middle of the tank.
-        AffineTransform cannonAt = AffineTransform.getTranslateInstance(tank.getX() - cannonImage.getWidth()/2, tank.getY() - cannonImage.getHeight());
+        AffineTransform cannonAt = AffineTransform.getTranslateInstance((tank.getX() - cannonImage.getWidth()/2) - tank.getCamera().getOffset().getX(),
+                (tank.getY() - cannonImage.getHeight()) - tank.getCamera().getOffset().getY());
         // Calculates rotation. We want the rotation to happen at the bottom of the picture, ergo
         // .getHeight is not divided by 2
         cannonAt.rotate(Math.toRadians(tank.getRotation()), cannonImage.getWidth()/2, cannonImage.getHeight());
@@ -200,13 +211,17 @@ public class GameView extends JPanel implements ActionListener
         {
             int heightDiff = tank.getHeight() - tank.getTankBase().getHeight();
             int widthDiff = tank.getWidth() - tank.getTankBase().getWidth();
-            double spawnX = tank.getX() - widthDiff;
-            double spawnY = tank.getY() - heightDiff;
+            double xOffset = tank.getCamera().getOffset().getX();
+            double yOffset = tank.getCamera().getOffset().getY();
+            double xSpawn = tank.getX() - widthDiff - xOffset;
+            double ySpawn = tank.getY() - heightDiff - yOffset;
 
-            baseAt = AffineTransform.getTranslateInstance(spawnX - (bullet.getWidth() / 2), spawnY - (bullet.getHeight() / 2));
-            bullet.setX(spawnX);
-            bullet.setY(spawnY);
-            gameManager.updateBulletLocation(bullet, new Point(spawnX, spawnY));
+            baseAt = AffineTransform.getTranslateInstance(xSpawn  - (bullet.getWidth() / 2), ySpawn - (bullet.getHeight() / 2));
+
+            // Big nono, we want a manager to handle this.
+//            bullet.setX(xSpawn);
+//            bullet.setY(ySpawn);
+            gameManager.updateBulletLocation(bullet, new Point(xSpawn, ySpawn));
             gameManager.bulletUpdateInitialState(bullet,false);
         }
         else
@@ -228,10 +243,10 @@ public class GameView extends JPanel implements ActionListener
 
         for (Bullet bullet : BulletContainer.getInstance().getBullets())
         {
-            System.out.println("-----------------------------");
-            System.out.println("bulletId: " + bullet.getId());
-            System.out.println("x: " + bullet.getX());
-            System.out.println("y: " + bullet.getY());
+//            System.out.println("-----------------------------");
+//            System.out.println("bulletId: " + bullet.getId());
+//            System.out.println("x: " + bullet.getX());
+//            System.out.println("y: " + bullet.getY());
             gameManager.move(bullet);
         }
         update();
@@ -252,22 +267,18 @@ public class GameView extends JPanel implements ActionListener
 
     public static void main(String[] args)
     {
-        EventQueue.invokeLater(new Runnable()
+        EventQueue.invokeLater(() ->
         {
-            @Override
-            public void run()
-            {
-                //Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-                JFrame frame = new JFrame();
-                frame.setContentPane(new GameView());
+            //Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            JFrame frame = new JFrame();
+            frame.setContentPane(new GameView());
 //                frame.setLocation((int)screenSize.getWidth()/2 - mapWidth/2, (int)screenSize.getHeight()/2 - mapHeight/2);
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame.pack();
-                frame.setLocationRelativeTo(null);
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.pack();
+            frame.setLocationRelativeTo(null);
 //                windowLocation.setLocation(screenSize.getWidth() / 2 - frame.getWidth() / 2, screenSize.getHeight() / 2 - frame.getHeight() / 2);
 //                frame.setLocation((int) windowLocation.getX(), (int) windowLocation.getY());
-                frame.setVisible(true);
-            }
+            frame.setVisible(true);
         });
     }
 
