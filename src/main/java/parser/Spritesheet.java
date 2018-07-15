@@ -16,13 +16,10 @@ public class Spritesheet
         spriteSheet = Sprite.loadImage(path);
     }
 
-    public BufferedImage getTileAt(int tileWidth, int tileHeight, int width, int height, int positionToFetch, int positionOffset)
+    public BufferedImage getTileAt(int tileWidth, int tileHeight, int width, int height, int positionToFetch)
     {
-        int widthInPixels = width * tileWidth;
-        int heightInPixels = height * tileHeight;
-
-        int x = (positionToFetch - positionOffset - 1) % width;
-        int y = (positionToFetch - positionOffset) / width;
+        int x = (positionToFetch  - 1) % width;
+        int y = (positionToFetch) / width;
 
         return spriteSheet.getSubimage(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
     }

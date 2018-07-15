@@ -38,7 +38,14 @@ public class MapView
         // Draw each map layer
         int layerCount = tankMap.getLayers().size();
 
-        //System.out.println("Layers: " + layerCount);
+        // Relocate draw location, to fit start of the draw point.
+        int xOffset = (int)tank.getCamera().getOffset().getX();
+        int yOffset = (int)tank.getCamera().getOffset().getY();
+
+        // Draw from
+        double tileOffset = 1 * tankMap.getTileWidth();
+        double xCamera = tank.getCamera().getOffset().getX();
+        double yCamera = tank.getCamera().getOffset().getY();
 
         // Draws entire map.
         for (int i = 0; i < layerCount; i++)
@@ -69,24 +76,10 @@ public class MapView
                 // Tile to fetch
                 int dataPoint = (int)((long)data.get(j));
 
-//                System.out.println(
-//                        "Data Point: " + dataPoint +
-//                        "\nJ value: " + j);
-
-
-                // Draw from
-                double tileOffset = 2 * tankMap.getTileWidth();
-                double xCamera = tank.getCamera().getOffset().getX();
-                double yCamera = tank.getCamera().getOffset().getY();
-
-                // TODO REMOVE
-//                tank.setDx(10);
-//                tank.setDy(10);
-
                 // Data to fetch the rendering area, should be a square around the player position
                 // TODO Switch the tileOffset to - -> + and vice versa
-                double drawStartPointX = (tank.getX() - clip.getWidth()/2) - tileOffset/2;
-                double drawStartPointY = (tank.getY() - clip.getHeight()/2) - tileOffset/2;
+                double drawStartPointX = (tank.getX() - clip.getWidth()/2) - tileOffset;
+                double drawStartPointY = (tank.getY() - clip.getHeight()/2) - tileOffset;
                 double drawEndPointX = (xCamera + clip.getWidth()) + tileOffset;
                 double drawEndPointY = (yCamera + clip.getHeight()) + tileOffset;
 
@@ -101,23 +94,16 @@ public class MapView
                             tankMap.getTileWidth(), tankMap.getTileHeight(),
                             // Spritesheet width and height. Not to be confused with the Tilesheet
                             8, 4,
-                            dataPoint, 0);
-                    tilesToDraw.add(tile);
+                            dataPoint);
 
-                    // Relocate draw location, to fit start of the draw point.
-                    int xOffset = (int)tank.getCamera().getOffset().getX();
-                    int yOffset = (int)tank.getCamera().getOffset().getY();
-//                    System.out.println("x offset:           " + xOffset);
-//                    System.out.println("y offset:           " + yOffset);
-//                    System.out.println("xDrawPoint:         " +  (posX - xOffset));
-//                    System.out.println("yDrawPoint:         " +  (posY - yOffset));
                     g2d.drawImage(tile, posX - xOffset, posY - yOffset, null);
                 }
-                    // old
 
-
-
-//                if (pointInPixels)
+                // Draw "edge" with a rectangle to indicate end of map
+                // TODO Reavaluate. Fix camera limits first.
+//                g2d.setColor(Color.RED);
+//                g2d.setStroke(new BasicStroke(10));
+//                g2d.drawRect(0 - xOffset, 0 - yOffset, tankMap.getWidthInPixels(), tankMap.getHeightInPixels());
 
             }
             // Empty the arrayList.
