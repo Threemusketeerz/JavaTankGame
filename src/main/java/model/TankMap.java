@@ -9,10 +9,10 @@ import java.io.IOException;
 
 public class TankMap
 {
-    private String path;
-    private int width, height, tileWidth, tileHeight;
-    private JSONArray tilesets;
-    private JSONArray layers;
+    private String      path;
+    private int         width, height, tileWidth, tileHeight;
+    private JSONArray   tilesets;
+    private JSONArray   layers;
 
     public TankMap(String path) throws ParseException, IOException
     {

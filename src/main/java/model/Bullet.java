@@ -14,14 +14,20 @@ public class Bullet extends Sprite implements Drawable
     // Which player do I belong to?
     private Tank                tank;
 
-    public Bullet(Tank tank, String imagePath, double x, double y, double rotation, Constraint constraint, Collision collision)
+    public Bullet(Tank tank, BufferedImage image, double x, double y, double rotation, Constraint constraint, Collision collision)
     {
         super(x, y, rotation, constraint, collision);
-        this.image      = loadImage(imagePath);
+        this.image      = image;
         this.tank       = tank;
         initialState = true;
         id = uid;
         uid++;
+
+    }
+
+    public Bullet(Tank tank, String imagePath, double x, double y, double rotation, Constraint constraint, Collision collision)
+    {
+        this(tank, loadImage(imagePath), x, y, rotation, constraint, collision);
     }
 
     public int getId() { return id; }

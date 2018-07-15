@@ -2,6 +2,7 @@ package model;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 public class Sprite
@@ -50,7 +51,11 @@ public class Sprite
         BufferedImage image = null;
         try
         {
-            image = ImageIO.read(Sprite.class.getClass().getResourceAsStream(imagePath));
+            if (imagePath.startsWith("/"))
+                image = ImageIO.read(Sprite.class.getClass().getResourceAsStream(imagePath));
+            else
+                image = ImageIO.read(new FileInputStream(imagePath));
+
             if (image == null)
             {
                 System.out.println("Couldn't find " + imagePath);

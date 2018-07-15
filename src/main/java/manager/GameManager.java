@@ -90,7 +90,7 @@ public class GameManager
             double spawnY = tank.getY() - (tank.getHeight() / 2);
             TankMap map = MapContainer.getInstance().getMap();
             Constraint constraint = new Constraint(0, 0, map.getWidthInPixels(), map.getHeightInPixels());
-            Bullet bullet = new Bullet(tank, tank.getBulletType(),
+            Bullet bullet = new Bullet(tank, tank.getBullet(),
                     spawnX,
                     spawnY,
                     tank.getRotation(), constraint, null);
@@ -102,7 +102,7 @@ public class GameManager
             bullet.setDx(xSpeed);
             bullet.setDy(ySpeed);
 
-            BulletContainer.getInstance().add(bullet);
+            BulletContainer.getInstance().addBullet(bullet);
         }
     }
 
@@ -228,7 +228,7 @@ public class GameManager
         }
     }
 
-    public void bulletUpdateInitialState(Bullet bullet, boolean state)
+    public void updateBulletInitialState(Bullet bullet, boolean state)
     {
         bullet.setInitialState(state);
     }
@@ -238,4 +238,5 @@ public class GameManager
         bullet.setX(point.getX());
         bullet.setY(point.getY());
     }
+
 }

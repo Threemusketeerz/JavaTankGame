@@ -1,6 +1,8 @@
 package view;
 
+import manager.BulletManager;
 import manager.GameManager;
+import manager.TankManager;
 import model.*;
 import util.Point;
 import model.TankMap;
@@ -34,6 +36,8 @@ public class GameView extends JPanel implements ActionListener
     private ArrayList<Tank>     tanks;
     private ArrayList<Bullet>   bullets;
     private GameManager         gameManager;
+    private TankManager         tankManager;
+    private BulletManager       bulletManager;
 
     public GameView()
     {
@@ -41,15 +45,13 @@ public class GameView extends JPanel implements ActionListener
 
         setVisible(true);
 
+        // Generic setup
         gameManager = new GameManager();
+        tankManager = new TankManager();
+        bulletManager = new BulletManager();
 
         tanks = new ArrayList<>();
         bullets = BulletContainer.getInstance().getBullets();
-
-        File testFile = new File(getClass().getResource("/Tank/Spritesheet/sheet_tanks.png").toString().replace("file:", ""));
-
-        if (testFile.exists())
-            System.out.println(testFile.toString() + " exists!!!!!");
 
         // load the layers
         try
@@ -76,16 +78,17 @@ public class GameView extends JPanel implements ActionListener
         mapWidth = map.getWidthInPixels();
         mapHeight = map.getHeightInPixels();
 
-        player = new Tank("/Tank/PNG/Tanks/tankBlue.png",
-                "/Tank/PNG/Tanks/barrelBlue.png",
-                "/Tank/PNG/Bullets/bulletBlue.png",
+        player = new Tank(tankManager.findAsset("tankBlue_outline.png"),
+                tankManager.findAsset("barrelBlue_outline.png"),
+                bulletManager.findAsset("bulletBlue_outline.png"),
                 "Player 1",
 //                map.getWidthInPixels()/2, map.getHeightInPixels()/ 2, 0.0,
                 WIDTH/2, HEIGHT/2, 0.0,
                 new Constraint(0, 0, mapWidth, mapHeight),
                 null);
-        player.setConstraint(new Constraint(0, 0, mapWidth, mapHeight));
-        player.setCamera(new Camera(new Point(player.getX() - WIDTH/2, player.getY() - HEIGHT/2)));
+        // GameManager
+        tankManager.attachCamera(player, new Camera(new Point(player.getX() - WIDTH/2, player.getY() - HEIGHT/2)));
+
 
         addKeyListener(new TAdapter());
         setFocusable(true);
@@ -115,12 +118,11 @@ public class GameView extends JPanel implements ActionListener
     // Essentially or render() method
     public void paintComponent(Graphics g)
     {
-
         Graphics2D g2d = (Graphics2D) g.create();
         ArrayList<Bullet> garbage = new ArrayList<>();
+
         // Draw map
         mapView.paintComponent(g2d, player);
-
 
         ListIterator<Bullet> it = bullets.listIterator();
 
@@ -129,10 +131,10 @@ public class GameView extends JPanel implements ActionListener
             Bullet bullet = it.next();
             drawBullet(g2d, player, bullet);
             gameManager.checkBulletConstraints(bullet, garbage);
-//            System.out.println("-----------------------------");
-//            System.out.println("bulletId: " + bullet.getId());
-//            System.out.println("x: " + bullet.getX());
-//            System.out.println("y: " + bullet.getY());
+////            System.out.println("-----------------------------");
+////            System.out.println("bulletId: " + bullet.getId());
+////            System.out.println("x: " + bullet.getX());
+////            System.out.println("y: " + bullet.getY());
         }
 //
 
@@ -222,7 +224,7 @@ public class GameView extends JPanel implements ActionListener
 //            bullet.setX(xSpawn);
 //            bullet.setY(ySpawn);
             gameManager.updateBulletLocation(bullet, new Point(xSpawn, ySpawn));
-            gameManager.bulletUpdateInitialState(bullet,false);
+            gameManager.updateBulletInitialState(bullet,false);
         }
         else
         {

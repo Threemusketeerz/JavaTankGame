@@ -13,8 +13,8 @@ import java.util.ArrayList;
 
 public class MapView
 {
-    private TankMap tankMap;
-    private Spritesheet spriteSheet;
+    private TankMap         tankMap;
+    private Spritesheet     spriteSheet;
 
     public MapView(TankMap tankMap, Spritesheet spriteSheet)
     {
@@ -73,30 +73,31 @@ public class MapView
 //                        "Data Point: " + dataPoint +
 //                        "\nJ value: " + j);
 
-                // Actual tile.
-                // TODO fix hardcoded values.
-                BufferedImage tile = spriteSheet.getTileAt(
-                        tankMap.getTileWidth(), tankMap.getTileHeight(),
-                        // Spritesheet width and height. Not to be confused with the Tilesheet
-                        8, 4,
-                        dataPoint, 0);
 
                 // Draw from
-                double tileOffset = 1 * tankMap.getTileWidth();
-                double playerX = tank.getCamera().getOffset().getX();
-                double playerY = tank.getCamera().getOffset().getY();
+                double tileOffset = 2 * tankMap.getTileWidth();
+                double xCamera = tank.getCamera().getOffset().getX();
+                double yCamera = tank.getCamera().getOffset().getY();
 
                 // Data to fetch the rendering area, should be a square around the player position
-                double drawStartPointX = (playerX - clip.getWidth()) - tileOffset;
-                double drawStartPointY = (playerY - clip.getHeight()) - tileOffset;
-                double drawEndPointX = (playerX + clip.getWidth()) + tileOffset;
-                double drawEndPointY = (playerY + clip.getHeight()) + tileOffset;
+                // TODO Switch the tileOffset to - -> + and vice versa
+                double drawStartPointX = (xCamera - clip.getWidth()) + tileOffset;
+                double drawStartPointY = (yCamera - clip.getHeight()) + tileOffset;
+                double drawEndPointX = (xCamera + clip.getWidth()) - tileOffset;
+                double drawEndPointY = (yCamera + clip.getHeight()) - tileOffset;
 
                 if (posX >= drawStartPointX
                         && posY >= drawStartPointY
                         && posX <= drawEndPointX
                         && posY <= drawEndPointY)
                 {
+                    // Actual tile.
+                    // TODO fix hardcoded values.
+                    BufferedImage tile = spriteSheet.getTileAt(
+                            tankMap.getTileWidth(), tankMap.getTileHeight(),
+                            // Spritesheet width and height. Not to be confused with the Tilesheet
+                            8, 4,
+                            dataPoint, 0);
                     tilesToDraw.add(tile);
 
                     // Relocate draw location, to fit start of the draw point.
