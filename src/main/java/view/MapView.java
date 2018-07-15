@@ -79,12 +79,16 @@ public class MapView
                 double xCamera = tank.getCamera().getOffset().getX();
                 double yCamera = tank.getCamera().getOffset().getY();
 
+                // TODO REMOVE
+//                tank.setDx(10);
+//                tank.setDy(10);
+
                 // Data to fetch the rendering area, should be a square around the player position
                 // TODO Switch the tileOffset to - -> + and vice versa
-                double drawStartPointX = (xCamera - clip.getWidth()) + tileOffset;
-                double drawStartPointY = (yCamera - clip.getHeight()) + tileOffset;
-                double drawEndPointX = (xCamera + clip.getWidth()) - tileOffset;
-                double drawEndPointY = (yCamera + clip.getHeight()) - tileOffset;
+                double drawStartPointX = (tank.getX() - clip.getWidth()/2) - tileOffset/2;
+                double drawStartPointY = (tank.getY() - clip.getHeight()/2) - tileOffset/2;
+                double drawEndPointX = (xCamera + clip.getWidth()) + tileOffset;
+                double drawEndPointY = (yCamera + clip.getHeight()) + tileOffset;
 
                 if (posX >= drawStartPointX
                         && posY >= drawStartPointY
