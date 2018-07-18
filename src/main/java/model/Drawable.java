@@ -1,13 +1,15 @@
 package model;
 
+import org.newdawn.slick.Image;
+
 import java.awt.image.BufferedImage;
 
 public interface Drawable
 {
-    double getX();
-    double getY();
-    double getRotation();
+    float getX();
+    float getY();
+    float getRotation();
     int getWidth();
     int getHeight();
-    BufferedImage getImage();
+    Image getImage();
 }

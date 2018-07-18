@@ -1,14 +1,15 @@
 
 package model;
 import java.awt.image.BufferedImage;
-import java.nio.Buffer;
+
+import org.newdawn.slick.Image;
 
 public class Tank extends Sprite implements Drawable
 {
     // Orientation is for rotating the tank. It can be between 0 and 360, you know full circle;
-    private BufferedImage       tankBase;
-    private BufferedImage       tankCannon;
-    private BufferedImage       bullet;
+    private Image               tankBase;
+    private Image               tankCannon;
+    private Image               bullet;
     private String              description;
     private Collision           collision;
     private Camera              camera;
@@ -19,8 +20,8 @@ public class Tank extends Sprite implements Drawable
     private long                lastFired;
 
 
-    public Tank(BufferedImage tankBase, BufferedImage tankCannon, BufferedImage bullet,
-                String description, double x, double y, double rotation,
+    public Tank(Image tankBase, Image tankCannon, Image bullet,
+                String description, float x, float y, float rotation,
                 Constraint constraint, Collision collision)
     {
         super(x, y, rotation, constraint, collision);
@@ -38,39 +39,17 @@ public class Tank extends Sprite implements Drawable
     }
 
 
-    /**
-     * If you wanna load in the assets a relative strings.
-     * The base dir is /path/to/resources/folder/
-     * @param tankBase
-     * @param tankCannon
-     * @param bulletType
-     * @param description
-     * @param x
-     * @param y
-     * @param rotation
-     * @param constraint
-     * @param collision
-     */
-    public Tank(String tankBase, String tankCannon, String bulletType,
-                String description, double x, double y, double rotation,
-                Constraint constraint, Collision collision)
-    {
-        this(loadImage(tankBase), loadImage(tankCannon), loadImage(bulletType), description, x, y, rotation, constraint, collision);
-    }
-
-
-
     // Accessors
     public int              getWidth() { return tankBase.getWidth(); }
     public int              getHeight() { return tankBase.getHeight(); }
     @Override
-    public BufferedImage    getImage() { return tankBase; }
-    public BufferedImage    getTankBase() { return tankBase; }
-    public BufferedImage    getTankCannon() { return tankCannon; }
+    public Image            getImage() { return tankBase; }
+    public Image            getTankBase() { return tankBase; }
+    public Image            getTankCannon() { return tankCannon; }
+    public Image            getBullet() { return bullet; }
     public long             getRateOfFire() { return rateOfFire; }
     public long             getLastFired() { return lastFired; }
     public Camera           getCamera() { return camera; }
-    public BufferedImage    getBullet() { return bullet; }
 
     public boolean          isDrivingForwards() { return drivingForwards; }
     public boolean          isShooting() { return shooting; }

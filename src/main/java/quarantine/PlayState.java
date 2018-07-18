@@ -10,7 +10,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import parser.Spritesheet;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import util.Point;
 import view.Game;
 
 import java.awt.*;
@@ -69,7 +68,7 @@ public class PlayState implements GameState
                 tankManager.findAsset("barrelBlue_outline.png"),
                 bulletManager.findAsset("bulletBlue_outline.png"),
                 "Player 1",
-                map.getWidthInPixels()/2, map.getHeightInPixels()/ 2, 0.0,
+                map.getWidthInPixels()/2, map.getHeightInPixels()/ 2, 0.0f,
                 new Constraint(0, 0, map.getWidthInPixels(), map.getHeightInPixels()),
                 null);
         tankManager.attachCamera(player, new Camera(new Point(player.getX() - screenWidth/2, player.getY() - screenHeight/2)));

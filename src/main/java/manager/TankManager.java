@@ -1,10 +1,11 @@
 package manager;
 
+import engine.Engine;
 import model.*;
-import util.Point;
+import org.newdawn.slick.Image;
+import org.newdawn.slick.geom.Point;
+import org.newdawn.slick.tiled.TiledMap;
 import view.Game;
-
-import java.awt.image.BufferedImage;
 
 public class TankManager implements AssetManager
 {
@@ -30,9 +31,14 @@ public class TankManager implements AssetManager
     }
 
     @Override
-    public BufferedImage findAsset(String name)
+    public Image findAsset(String name)
     {
         return TankContainer.getInstance().findAsset(name);
+    }
+
+    public void loadInAssets(String location, boolean clearAssets)
+    {
+        TankContainer.getInstance().loadInAssets(location, clearAssets);
     }
 
     /**
@@ -47,19 +53,21 @@ public class TankManager implements AssetManager
         {
             tank.setLastFired(System.currentTimeMillis());
 
-            double spawnX = tank.getX() - (tank.getWidth());
-            double spawnY = tank.getY() - (tank.getHeight() / 2);
-            TankMap map = MapContainer.getInstance().getMap();
-            Constraint constraint = new Constraint(0, 0, map.getWidthInPixels(), map.getHeightInPixels());
+            float spawnX = tank.getX() - (tank.getWidth());
+            float spawnY = tank.getY() - (tank.getHeight() / 2);
+            TiledMap map = MapContainer.getInstance().getMap();
+            int mapWidthInPixels = map.getWidth() * map.getTileWidth();
+            int mapHeightInPixels = map.getWidth() * map.getTileHeight();
+            Constraint constraint = new Constraint(0, 0, mapWidthInPixels, mapHeightInPixels);
             Bullet bullet = new Bullet(tank, tank.getBullet(),
                     spawnX,
                     spawnY,
                     tank.getRotation(), constraint, null);
             // Use sin and cos to orient the bullet int the right direction
-            double speed = bullet.getSpeed();
-            double rotation = Math.toRadians(bullet.getRotation());
-            double xSpeed = Math.sin(rotation) * speed;
-            double ySpeed = -Math.cos(rotation) * speed;
+            float speed = bullet.getSpeed();
+            float rotation = (float)Math.toRadians(bullet.getRotation());
+            float xSpeed = (float)Math.sin(rotation) * speed;
+            float ySpeed = (float)-Math.cos(rotation) * speed;
             bullet.setDx(xSpeed);
             bullet.setDy(ySpeed);
 
@@ -87,11 +95,11 @@ public class TankManager implements AssetManager
     public void driveForward(Tank tank)
     {
         tank.setIsDrivingForwards(true);
-        double speed = GameRules.SPEED.getValue();
-        double rotation = Math.toRadians(tank.getRotation());
-        double xSpeed = Math.sin(rotation) * speed;
+        float speed = GameRules.SPEED.getValue();
+        float rotation = (float)Math.toRadians(tank.getRotation());
+        float xSpeed = (float)Math.sin(rotation) * speed;
 //        System.out.println("X speed: " + xSpeed);
-        double ySpeed = -Math.cos(rotation) * speed;
+        float ySpeed = (float)-Math.cos(rotation) * speed;
 //        System.out.println("Angle: " + player.getBufferRotation());
 //        System.out.println("Y speed: " + ySpeed);
         tank.setDx(xSpeed);
@@ -102,10 +110,10 @@ public class TankManager implements AssetManager
     public void driveBackward(Tank tank)
     {
         tank.setIsDrivingBackwards(true);
-        double speed = GameRules.SPEED.getValue();
-        double rotation = Math.toRadians(tank.getRotation());
-        double xSpeed = -Math.sin(rotation) * speed;
-        double ySpeed = Math.cos(rotation) * speed;
+        float speed = GameRules.SPEED.getValue();
+        float rotation = (float)Math.toRadians(tank.getRotation());
+        float xSpeed = (float)-Math.sin(rotation) * speed;
+        float ySpeed = (float)Math.cos(rotation) * speed;
         tank.setDx(xSpeed);
         tank.setDy(ySpeed);
         GameManager.checkConstraints(tank, tank.getWidth(), tank.getHeight());
@@ -124,13 +132,13 @@ public class TankManager implements AssetManager
                 driveForward(tank);
             else if (tank.isDrivingBackwards())
                 driveBackward(tank);
-            tank.setBufferRotation(tank.getRotation() + tank.getDeltaRotation());
+            tank.setRotation(tank.getRotation() + tank.getDeltaRotation());
             GameManager.move(tank);
 
 //            Point cameraPos = tank.getCamera().getOffset();
             // Set new camera position
-            tank.getCamera().setOffset(new Point(tank.getX() - Game.WIDTH / 2,
-                    tank.getY() - Game.HEIGHT / 2));
+            tank.getCamera().setOffset(new Point(tank.getX() - Engine.WIDTH / 2,
+                    tank.getY() - Engine.HEIGHT / 2));
         }
     }
 

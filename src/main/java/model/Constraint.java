@@ -2,9 +2,9 @@ package model;
 
 public class Constraint
 {
-    private double minX, minY, maxX, maxY;
+    private float minX, minY, maxX, maxY;
 
-    public Constraint(double minX, double minY, double maxX, double maxY)
+    public Constraint(float minX, float minY, float maxX, float maxY)
     {
         this.minX = minX;
         this.minY = minY;
@@ -12,8 +12,8 @@ public class Constraint
         this.maxY = maxY;
     }
 
-    public double getMinX() { return minX; }
-    public double getMinY() { return minY; }
-    public double getMaxX() { return maxX; }
-    public double getMaxY() { return maxY; }
+    public float getMinX() { return minX; }
+    public float getMinY() { return minY; }
+    public float getMaxX() { return maxX; }
+    public float getMaxY() { return maxY; }
 }

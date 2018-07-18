@@ -9,11 +9,11 @@
   Der bliver ikke lagt en tidsplan. Der bliver lagt en plan der ikke er begrænset af tid. SCRUM måske?
 
 * Problemformulering 
-  Der skal designes en simpel Game Engine som man kan arbejde ud fra når der bliver lavet spil. \\ 
+  Der skal designes en simpel Game engine.Engine som man kan arbejde ud fra når der bliver lavet spil. \\
   Der skal nemt kunne laves elementer i et vindue, give elementer forskellige attributter \\
   (som lyd, kollision, kamera) og man skal kunne bevæge elementerne i forhold til deres relative position. \\\\
   
-  Det skal være en Game Engine der kan tage i mod et TileMap og bruge det som map.
+  Det skal være en Game engine.Engine der kan tage i mod et TileMap og bruge det som map.
 
  
 * Systemvision 

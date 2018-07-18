@@ -1,10 +1,12 @@
 package model;
 
+import org.newdawn.slick.tiled.TiledMap;
+
 public class MapContainer
 {
     private static MapContainer ourInstance = new MapContainer();
     // Container with only 1 map.
-    public TankMap map;
+    public TiledMap map;
 
     public static MapContainer getInstance()
     {
@@ -16,12 +18,12 @@ public class MapContainer
         map = null;
     }
 
-    public void setMap(TankMap map)
+    public void setMap(TiledMap map)
     {
         this.map = map;
     }
 
-    public TankMap getMap()
+    public TiledMap getMap()
     {
         return map;
     }

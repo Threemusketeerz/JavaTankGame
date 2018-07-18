@@ -1,12 +1,10 @@
 package view;
 
 import engine.GameEngine;
-import states.PlayState;
+//import states.PlayState;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -24,7 +22,7 @@ public class Game extends GameEngine
     public Game()
     {
         // Init playstate
-        changeState(PlayState.getInstance());
+//        changeState(PlayState.getInstance());
         getState().init(WIDTH, HEIGHT);
 
         addKeyListener(new TAdapter());

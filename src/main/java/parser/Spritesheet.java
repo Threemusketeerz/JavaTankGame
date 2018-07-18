@@ -13,7 +13,7 @@ public class Spritesheet
     public Spritesheet(String path)
     {
         this.path = path;
-        spriteSheet = Sprite.loadImage(path);
+//        spriteSheet = Sprite.loadImage(path);
     }
 
     public BufferedImage getTileAt(int tileWidth, int tileHeight, int width, int height, int positionToFetch)

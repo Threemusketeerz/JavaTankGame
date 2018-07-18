@@ -1,7 +1,11 @@
 package model;
 
+import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,7 +13,7 @@ import java.util.Set;
 
 public abstract class AssetContainer
 {
-    private HashMap<String, BufferedImage> assets;
+    private HashMap<String, Image> assets;
 
     public AssetContainer()
     {
@@ -23,8 +27,12 @@ public abstract class AssetContainer
     public void loadInAssets(String location, boolean clearAssets)
     {
         File dir = new File(getClass().getResource(location).toString().replace("file:", ""));
+
         if (clearAssets)
             assets.clear();
+
+        if (!dir.exists())
+            System.out.println(location + " doesn't exist");
 
         if (dir.isDirectory())
         {
@@ -34,13 +42,19 @@ public abstract class AssetContainer
             for (int i = 0; i < images.length; i++)
             {
 
-                System.out.println("Loading in : " + images[i]);
-                assets.put(images[i].getName(), Sprite.loadImage(images[i].toString()));
+                try
+                {
+                    System.out.println("Loading in : " + images[i].getPath());
+                    assets.put(images[i].getName(), new Image(images[i].getPath()));
+                } catch (SlickException e)
+                {
+                    e.printStackTrace();
+                }
             }
         }
     }
 
-    public BufferedImage findAsset(String name)
+    public Image findAsset(String name)
     {
         return assets.get(name);
     }
@@ -51,7 +65,7 @@ public abstract class AssetContainer
         return assets.keySet();
     }
 
-    public Collection<BufferedImage> values()
+    public Collection<Image> values()
     {
         return assets.values();
     }
