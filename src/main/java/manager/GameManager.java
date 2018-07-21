@@ -66,10 +66,8 @@ public class GameManager
 
     public static void checkBulletConstraints(Bullet bullet, ArrayList<Bullet> garbage)
     {
-        float xOffset = bullet.getTank().getCamera().getX();
-        float yOffset = bullet.getTank().getCamera().getY();
-
-        if (checkConstraints(bullet, bullet.getWidth(), bullet.getHeight(), xOffset, yOffset))
+        long livedTime = System.currentTimeMillis() - bullet.getSpawnTime();
+        if (livedTime > bullet.LIFE_TIME)
         {
             garbage.add(bullet);
         }

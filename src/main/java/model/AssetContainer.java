@@ -26,13 +26,14 @@ public abstract class AssetContainer
      */
     public void loadInAssets(String location, boolean clearAssets)
     {
-        File dir = new File(getClass().getResource(location).toString().replace("file:", ""));
+        File dir = new File(getClass().getClassLoader().getResource(location).getFile());
 
         if (clearAssets)
             assets.clear();
 
         if (!dir.exists())
             System.out.println(location + " doesn't exist");
+
 
         if (dir.isDirectory())
         {
@@ -51,6 +52,10 @@ public abstract class AssetContainer
                     e.printStackTrace();
                 }
             }
+        }
+        else
+        {
+            System.err.println(dir + " is not a directory");
         }
     }
 

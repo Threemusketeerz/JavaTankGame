@@ -8,7 +8,7 @@ public class BulletContainer extends AssetContainer
 {
     private static BulletContainer instance = new BulletContainer();
 
-    private static final String BULLETS = "/SimpleTanks/Bullets/";
+    private static final String BULLETS = "SimpleTanks/Bullets/";
     // For storing the bullets themselves.
     private ArrayList<Bullet> bullets;
     // For storing bullet assets.
@@ -40,7 +40,10 @@ public class BulletContainer extends AssetContainer
 
     public ArrayList<Bullet> getBullets()
     {
+        if (bullets == null)
+            bullets = new ArrayList<>();
         return bullets;
     }
+
 }
 

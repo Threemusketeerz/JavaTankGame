@@ -66,8 +66,8 @@ public class TankManager implements AssetManager
             // Use sin and cos to orient the bullet int the right direction
             float speed = bullet.getSpeed();
             float rotation = (float)Math.toRadians(bullet.getRotation());
-            float xSpeed = (float)Math.sin(rotation) * speed;
-            float ySpeed = (float)-Math.cos(rotation) * speed;
+            float xSpeed = ((float)Math.sin(rotation) * delta) * speed;
+            float ySpeed = ((float)-Math.cos(rotation) * delta) * speed;
             bullet.setDx(xSpeed);
             bullet.setDy(ySpeed);
 

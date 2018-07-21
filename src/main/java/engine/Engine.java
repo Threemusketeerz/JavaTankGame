@@ -17,7 +17,6 @@ public class Engine extends StateBasedGame
     public static final int     FRAME_RATE = 60;
 
     private static boolean running = false;
-    private TiledMap map;
 
     public Engine()
     {

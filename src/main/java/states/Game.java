@@ -10,6 +10,9 @@ import org.newdawn.slick.*;
 import org.newdawn.slick.geom.Point;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Vector2f;
+import org.newdawn.slick.particles.ConfigurableEmitter;
+import org.newdawn.slick.particles.ParticleIO;
+import org.newdawn.slick.particles.ParticleSystem;
 import org.newdawn.slick.particles.effects.FireEmitter;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
@@ -17,6 +20,8 @@ import org.newdawn.slick.tiled.TiledMap;
 import util.Key;
 
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Game extends BasicGameState
@@ -35,8 +40,7 @@ public class Game extends BasicGameState
     private BulletManager bulletManager;
     private GameManager gameManager;
 
-    private FireEmitter fireEmitter;
-
+    private ParticleSystem particleSystem;
 
     @Override
     public int getID()
@@ -47,6 +51,8 @@ public class Game extends BasicGameState
     @Override
     public void init(GameContainer gameContainer, StateBasedGame stateBasedGame) throws SlickException
     {
+//        createParticleEmitterFile("explosion");
+
         // Setup instances
         tankManager = new TankManager();
         bulletManager = new BulletManager();
@@ -72,7 +78,9 @@ public class Game extends BasicGameState
                         tank.getY() - Engine.HEIGHT / 2,
                         Engine.WIDTH, Engine.HEIGHT));
 
-        fireEmitter = new FireEmitter();
+        particleSystem = new ParticleSystem("Particles/squareParticle.png", 1500);
+        particleSystem.setPosition(0.0f, 0.0f);
+//        particleSystem.addEmitter(loadParticleEmitter(tank.ge));
     }
 
     @Override
@@ -112,6 +120,10 @@ public class Game extends BasicGameState
 //        graphics.drawString("yOffsetScaled: " + yOffsetScaled, 90f, 45f);
         graphics.drawString("xStart:        " + (int)xOffset/map.getTileWidth(), 90f, 30f);
         graphics.drawString("yStart:        " + (int)yOffset/map.getTileHeight(), 90f, 45f);
+
+        disposeBullets(new Vector2f(xOffset, yOffset));
+
+        particleSystem.render(0.0f, 0.0f);
 
         // Fireemitter test
     }
@@ -159,7 +171,7 @@ public class Game extends BasicGameState
         imgBullet.setRotation(bullet.getRotation());
         imgBullet.setCenterOfRotation(imgBullet.getWidth() / 2, imgBullet.getHeight() + padding);
 
-        imgBullet.draw(bullet.getX() - bullet.getWidth() / 2, bullet.getY() - bullet.getHeight() - padding);
+        imgBullet.draw(bullet.getX() - bullet.getWidth() / 2 - tank.getDx(), bullet.getY() - bullet.getHeight() - padding - tank.getDy());
     }
 
     public void calcCameraPosition()
@@ -189,9 +201,9 @@ public class Game extends BasicGameState
     @Override
     public void update(GameContainer gameContainer, StateBasedGame stateBasedGame, int delta) throws SlickException
     {
-        System.out.println(delta);
         tankManager.moveTank(tank, delta);
         tankManager.shoot(tank, delta);
+        particleSystem.update(delta);
 
         for (Bullet bullet : BulletContainer.getInstance().getBullets())
         {
@@ -199,18 +211,59 @@ public class Game extends BasicGameState
             gameManager.checkBulletConstraints(bullet, garbage);
         }
 
-        disposeBullets();
     }
 
-    public void disposeBullets()
+    public void disposeBullets(Vector2f pos)
     {
         for (Bullet bullet : garbage)
         {
+            explode(new Vector2f(bullet.getX() - pos.x, bullet.getY() - pos.y));
+            System.out.println("BulletX:        " + bullet.getX());
+            System.out.println("BulletY:        " + bullet.getY());
+            System.out.println("BulletX Offset  " + (bullet.getX() - pos.x));
+            System.out.println("BulletY Offset: " + (bullet.getY() - pos.y));
             bullets.remove(bullet);
         }
 
         garbage.clear();
     }
+
+    public void explode(Vector2f pos)
+    {
+        particleSystem.addEmitter(loadParticleEmitter(pos));
+    }
+
+    public ConfigurableEmitter loadParticleEmitter(Vector2f pos)
+    {
+        ConfigurableEmitter emitter = null;
+
+        try
+        {
+
+            emitter = ParticleIO.loadEmitter("Particles/explosion02.xml");
+            emitter.setPosition(pos.x, pos.y);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        return emitter;
+    }
+
+    public void createParticleEmitterFile(String name)
+    {
+        ConfigurableEmitter emitter = new ConfigurableEmitter(name);
+        try
+        {
+            ParticleIO.saveEmitter(new File("Particles"), emitter);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
 
     @Override
     public void keyPressed(int key, char c)
@@ -273,4 +326,5 @@ public class Game extends BasicGameState
             scale -= 1;
         }
     }
+
 }
