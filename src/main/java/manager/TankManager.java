@@ -5,7 +5,7 @@ import model.*;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Point;
 import org.newdawn.slick.tiled.TiledMap;
-import view.Game;
+import states.Game;
 
 public class TankManager implements AssetManager
 {
@@ -46,7 +46,7 @@ public class TankManager implements AssetManager
      *
      * @param tank Tank that's shooting.
      */
-    public void shoot(Tank tank)
+    public void shoot(Tank tank, int delta)
     {
 
         if ((System.currentTimeMillis() - tank.getLastFired()) >= tank.getRateOfFire() && tank.isShooting())
@@ -92,14 +92,14 @@ public class TankManager implements AssetManager
      *
      * @param tank Player driving forward
      */
-    public void driveForward(Tank tank)
+    public void driveForward(Tank tank, int delta)
     {
         tank.setIsDrivingForwards(true);
-        float speed = GameRules.SPEED.getValue();
+        float speed = tank.getSpeed();
         float rotation = (float)Math.toRadians(tank.getRotation());
-        float xSpeed = (float)Math.sin(rotation) * speed;
+        float xSpeed = ((float)Math.sin(rotation)*delta) * speed;
 //        System.out.println("X speed: " + xSpeed);
-        float ySpeed = (float)-Math.cos(rotation) * speed;
+        float ySpeed = ((float)-Math.cos(rotation)*delta) * speed;
 //        System.out.println("Angle: " + player.getBufferRotation());
 //        System.out.println("Y speed: " + ySpeed);
         tank.setDx(xSpeed);
@@ -107,13 +107,13 @@ public class TankManager implements AssetManager
         GameManager.checkConstraints(tank, tank.getWidth(), tank.getHeight());
     }
 
-    public void driveBackward(Tank tank)
+    public void driveBackward(Tank tank, int delta)
     {
         tank.setIsDrivingBackwards(true);
-        float speed = GameRules.SPEED.getValue();
+        float speed = tank.getSpeed();
         float rotation = (float)Math.toRadians(tank.getRotation());
-        float xSpeed = (float)-Math.sin(rotation) * speed;
-        float ySpeed = (float)Math.cos(rotation) * speed;
+        float xSpeed = ((float)-Math.sin(rotation)*delta) * speed;
+        float ySpeed = ((float)Math.cos(rotation)*delta) * speed;
         tank.setDx(xSpeed);
         tank.setDy(ySpeed);
         GameManager.checkConstraints(tank, tank.getWidth(), tank.getHeight());
@@ -124,21 +124,21 @@ public class TankManager implements AssetManager
      *
      * @param tank Tank to move.
      */
-    public void moveTank(Tank tank)
+    public void moveTank(Tank tank, int delta)
     {
         if (!tank.isShooting())
         {
             if (tank.isDrivingForwards())
-                driveForward(tank);
+                driveForward(tank, delta);
             else if (tank.isDrivingBackwards())
-                driveBackward(tank);
+                driveBackward(tank, delta);
             tank.setRotation(tank.getRotation() + tank.getDeltaRotation());
             GameManager.move(tank);
 
 //            Point cameraPos = tank.getCamera().getOffset();
             // Set new camera position
-            tank.getCamera().setOffset(new Point(tank.getX() - Engine.WIDTH / 2,
-                    tank.getY() - Engine.HEIGHT / 2));
+            tank.getCamera().setXY(new Point(tank.getX() - (Engine.WIDTH / 2),
+                    tank.getY() - (Engine.HEIGHT  / 2)));
         }
     }
 

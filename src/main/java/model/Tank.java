@@ -8,7 +8,6 @@ public class Tank extends Sprite implements Drawable
 {
     // Orientation is for rotating the tank. It can be between 0 and 360, you know full circle;
     private Image               tankBase;
-    private Image               tankCannon;
     private Image               bullet;
     private String              description;
     private Collision           collision;
@@ -18,15 +17,15 @@ public class Tank extends Sprite implements Drawable
     // How long does the Tank have to wait before being able to shoot again?
     private long                rateOfFire;
     private long                lastFired;
+    private float               speed;
 
 
-    public Tank(Image tankBase, Image tankCannon, Image bullet,
+    public Tank(Image tankBase, Image bullet,
                 String description, float x, float y, float rotation,
                 Constraint constraint, Collision collision)
     {
         super(x, y, rotation, constraint, collision);
         this.tankBase           = tankBase;
-        this.tankCannon         = tankCannon;
         this.bullet             = bullet;
         this.description        = description;
         // Tanks don't start off drivingForwards or shooting
@@ -36,6 +35,7 @@ public class Tank extends Sprite implements Drawable
 
         this.rateOfFire         = 300;
         this.lastFired          = 0;
+        this.speed              = .2f;
     }
 
 
@@ -45,11 +45,11 @@ public class Tank extends Sprite implements Drawable
     @Override
     public Image            getImage() { return tankBase; }
     public Image            getTankBase() { return tankBase; }
-    public Image            getTankCannon() { return tankCannon; }
     public Image            getBullet() { return bullet; }
     public long             getRateOfFire() { return rateOfFire; }
     public long             getLastFired() { return lastFired; }
     public Camera           getCamera() { return camera; }
+    public float            getSpeed() { return speed; }
 
     public boolean          isDrivingForwards() { return drivingForwards; }
     public boolean          isShooting() { return shooting; }

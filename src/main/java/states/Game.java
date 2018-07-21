@@ -8,6 +8,9 @@ import manager.TankManager;
 import model.*;
 import org.newdawn.slick.*;
 import org.newdawn.slick.geom.Point;
+import org.newdawn.slick.geom.Rectangle;
+import org.newdawn.slick.geom.Vector2f;
+import org.newdawn.slick.particles.effects.FireEmitter;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.tiled.TiledMap;
@@ -20,13 +23,19 @@ public class Game extends BasicGameState
 {
     public static final int ID = 0;
 
-    private TiledMap            map;
-    private Tank                tank;
-    private ArrayList<Bullet>   bullets;
-    private ArrayList<Bullet>   garbage;
-    private TankManager         tankManager;
-    private BulletManager       bulletManager;
-    private GameManager         gameManager;
+    private static final float[] scaleFactors = {0.8f, 1f, 1.2f, 1.4f, 1.6f, 1.8f, 2f};
+
+    private static int scale = 1;
+
+    private TiledMap map;
+    private Tank tank;
+    private ArrayList<Bullet> bullets;
+    private ArrayList<Bullet> garbage;
+    private TankManager tankManager;
+    private BulletManager bulletManager;
+    private GameManager gameManager;
+
+    private FireEmitter fireEmitter;
 
 
     @Override
@@ -44,45 +53,67 @@ public class Game extends BasicGameState
         gameManager = new GameManager();
         bullets = BulletContainer.getInstance().getBullets();
         garbage = new ArrayList<>();
-        map = new TiledMap("Maps/Map01.tmx");
+        map = new TiledMap("Maps/Map02.tmx");
         MapContainer.getInstance().setMap(map);
 
         int mapWidth = map.getWidth() * map.getTileWidth();
-        int mapHeight = map.getWidth() * map.getTileHeight();
+        int mapHeight = map.getHeight() * map.getTileHeight();
 
-        System.out.println("Available assets");
-        for (String key : TankContainer.getInstance().keySet())
-        {
-            System.out.println(key);
-        }
-
-        if (tankManager.findAsset("tankBlue_outline.png") == null)
-        {
-            System.err.println("Couldn't find asset");
-        }
-
-        tank = new Tank(tankManager.findAsset("tankBlue_outline.png"),
-                tankManager.findAsset("barrelBlue_outline.png"),
-                bulletManager.findAsset("bulletBlue_outline.png"),
+        tank = new Tank(tankManager.findAsset("blueTank01_big.png"),
+                bulletManager.findAsset("bullet01_big.png"),
                 "Player 1",
-                mapWidth/2, mapHeight/2, 0f,
+                mapWidth / 2, mapHeight / 2, 0f,
                 new Constraint(0, 0, mapWidth, mapHeight),
                 null
         );
 
-        tankManager.attachCamera(tank, new Camera(new Point(tank.getX() - Engine.WIDTH/2, tank.getY() - Engine.HEIGHT/2)));
+        tankManager.attachCamera(tank,
+                new Camera(tank.getX() - Engine.WIDTH / 2,
+                        tank.getY() - Engine.HEIGHT / 2,
+                        Engine.WIDTH, Engine.HEIGHT));
+
+        fireEmitter = new FireEmitter();
     }
 
     @Override
     public void render(GameContainer gameContainer, StateBasedGame stateBasedGame, Graphics graphics) throws SlickException
     {
-        float xOffset = tank.getCamera().getOffset().getX();
-        float yOffset = tank.getCamera().getOffset().getY();
-        map.render(-(int)xOffset, -(int)yOffset);
+
+        Camera camera = tank.getCamera();
+
+        calcCameraPosition();
+
+        float xOffset = camera.getX();
+        float yOffset = camera.getY();
+
+        float xOffsetScaled = xOffset;
+        float yOffsetScaled = yOffset;
+
+        graphics.scale(scaleFactors[scale], scaleFactors[scale]);
+
+//        int xStart = (int)Math.floor(xOffset/map.getTileWidth());
+//        int yStart = (int)Math.floor(yOffset/map.getTileHeight());
+//        int xEnd = (int)Math.floor(camera.getWidth() / map.getTileWidth());
+//        int yEnd = (int)Math.floor(camera.getHeight() / map.getTileHeight());
+
+        map.render((int) -xOffsetScaled, (int) -yOffsetScaled);
+//        map.render(16, 16,
+//                xStart, yStart,
+//                xEnd, yEnd);
 
         // Render bullets first, so they appear to go through the tank.
-        renderBullets();
+        renderBullets(xOffset, yOffset);
         renderTank(xOffset, yOffset);
+
+
+        graphics.drawString("xOffset:       " + xOffset, 90f, 0f);
+        graphics.drawString("yOffset:       " + yOffset, 90f, 15f);
+//        graphics.drawString("xOffsetScaled: " + xOffsetScaled, 90f, 30f);
+//        graphics.drawString("yOffsetScaled: " + yOffsetScaled, 90f, 45f);
+        graphics.drawString("xStart:        " + (int)xOffset/map.getTileWidth(), 90f, 30f);
+        graphics.drawString("yStart:        " + (int)yOffset/map.getTileHeight(), 90f, 45f);
+
+        // Fireemitter test
     }
 
     public void renderTank(float xOffset, float yOffset)
@@ -91,43 +122,30 @@ public class Game extends BasicGameState
         float yTank = tank.getY() - yOffset;
 
         Image tankBase = tank.getTankBase();
-        Image tankCannon = tank.getTankCannon();
-
-        // Padding for positioning the cannon.
-        float padding = 10.0f;
 
         // Draw base
         tankBase.setRotation(tank.getRotation());
-//        tank.getImage().setCenterOfRotation(tankBase.getWidth()/2, tankBase.getHeight()/2);
-        tankBase.draw(xTank - tankBase.getWidth()/2, yTank - tankBase.getHeight()/2);
-
-        // Draw cannon. The 10 in the end is a sort of padding to center the cannon of the drawing
-        tankCannon.setCenterOfRotation(tankCannon.getWidth()/2, tankCannon.getHeight() - padding);
-        tankCannon.setRotation(tank.getRotation());
-//        tank.getTankCannon().rotate(tank.getRotation());
-        tankCannon.draw(xTank - tankCannon.getWidth()/2, yTank - tankBase.getHeight()/2 - padding);
+        tankBase.draw(xTank - (tankBase.getWidth()) / 2, yTank - (tankBase.getHeight()) / 2);
     }
 
-    public void renderBullets()
+    public void renderBullets(float xOffset, float yOffset)
     {
         for (Bullet bullet : BulletContainer.getInstance().getBullets())
         {
-            renderBullet(tank, bullet);
+            renderBullet(tank, bullet, xOffset, yOffset);
         }
     }
 
-    public void renderBullet(Tank tank, Bullet bullet)
+    public void renderBullet(Tank tank, Bullet bullet, float xOffset, float yOffset)
     {
         Image imgBullet = bullet.getImage();
-        float xOffset = tank.getCamera().getOffset().getX();
-        float yOffset = tank.getCamera().getOffset().getY();
 
         int padding = 15;
 
         if (bullet.isInitialState())
         {
-            int heightDiff = tank.getHeight() - tank.getTankBase().getHeight();
-            int widthDiff = tank.getWidth() - tank.getTankBase().getWidth();
+            float heightDiff = tank.getHeight() - tank.getTankBase().getHeight();
+            float widthDiff = tank.getWidth() - tank.getTankBase().getWidth();
 
             // Get Spawn points.
             float xSpawn = tank.getX() - widthDiff - xOffset;
@@ -135,20 +153,45 @@ public class Game extends BasicGameState
 
             // Set the location of the bullet
             gameManager.updateBulletLocation(bullet, new Point(xSpawn, ySpawn));
-            gameManager.updateBulletInitialState(bullet,false);
+            gameManager.updateBulletInitialState(bullet, false);
         }
 
         imgBullet.setRotation(bullet.getRotation());
-        imgBullet.setCenterOfRotation(imgBullet.getWidth()/2, imgBullet.getHeight() + padding);
+        imgBullet.setCenterOfRotation(imgBullet.getWidth() / 2, imgBullet.getHeight() + padding);
 
-        imgBullet.draw(bullet.getX() - bullet.getWidth()/2, bullet.getY() - bullet.getHeight() - padding);
+        imgBullet.draw(bullet.getX() - bullet.getWidth() / 2, bullet.getY() - bullet.getHeight() - padding);
+    }
+
+    public void calcCameraPosition()
+    {
+        Camera camera = tank.getCamera();
+
+        int mapWidth = map.getWidth() * map.getTileWidth();
+        int mapHeight = map.getHeight() * map.getTileHeight();
+
+        // Calculate camera position according to scale.
+        camera.setWidth(Engine.WIDTH / scaleFactors[scale]);
+        camera.setHeight(Engine.HEIGHT / scaleFactors[scale]);
+        // Set the new X according to the width
+        camera.centerOn(tank);
+
+        if (camera.getEndX() >= mapWidth)
+            camera.setX(mapWidth - camera.getWidth());
+        else if (camera.getX() <= 0)
+            camera.setX(0);
+
+        if (camera.getEndY() >= mapHeight)
+            camera.setY(mapHeight - camera.getHeight());
+        else if (camera.getY() <= 0)
+            camera.setY(0);
     }
 
     @Override
-    public void update(GameContainer gameContainer, StateBasedGame stateBasedGame, int i) throws SlickException
+    public void update(GameContainer gameContainer, StateBasedGame stateBasedGame, int delta) throws SlickException
     {
-        tankManager.moveTank(tank);
-        tankManager.shoot(tank);
+        System.out.println(delta);
+        tankManager.moveTank(tank, delta);
+        tankManager.shoot(tank, delta);
 
         for (Bullet bullet : BulletContainer.getInstance().getBullets())
         {
@@ -187,8 +230,8 @@ public class Game extends BasicGameState
                 tankManager.rotateLeft(tank);
                 break;
             case Key.SPACE:
-                tankManager.shoot(tank);
-                tankManager.shooting(tank,true);
+//                tankManager.shoot(tank, delta);
+                tankManager.shooting(tank, true);
                 break;
         }
 
@@ -212,7 +255,22 @@ public class Game extends BasicGameState
                 tankManager.stopTurningLeft(tank);
                 break;
             case Key.SPACE:
-                tankManager.shooting(tank,false);
+                tankManager.shooting(tank, false);
+        }
+    }
+
+    @Override
+    public void mouseWheelMoved(int change)
+    {
+//        System.out.println("MouseWheel: " + change);
+        if (change > 0 && scale < scaleFactors.length - 1)
+        {
+            scale += 1;
+        }
+
+        if (change < 0 && scale > 1)
+        {
+            scale -= 1;
         }
     }
 }

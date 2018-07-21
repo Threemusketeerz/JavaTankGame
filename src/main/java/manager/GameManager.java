@@ -32,10 +32,10 @@ public class GameManager
             System.out.println("Sprite constraint not inititalized?");
         else
         {
-            float minX = sprite.getConstraint().getMinX() + spriteWidth / 2 - xOffset;
-            float minY = sprite.getConstraint().getMinY() + spriteHeight / 2 - yOffset;
-            float maxX = sprite.getConstraint().getMaxX() - spriteWidth / 2 - xOffset;
-            float maxY = sprite.getConstraint().getMaxY() - spriteHeight / 2 - yOffset;
+            float minX = sprite.getConstraint().getX() + spriteWidth / 2 - xOffset;
+            float minY = sprite.getConstraint().getY() + spriteHeight / 2 - yOffset;
+            float maxX = sprite.getConstraint().getEndX() - spriteWidth / 2 - xOffset;
+            float maxY = sprite.getConstraint().getEndY() - spriteHeight / 2 - yOffset;
             float spriteX = sprite.getX();
             float spriteY = sprite.getY();
 
@@ -66,8 +66,8 @@ public class GameManager
 
     public static void checkBulletConstraints(Bullet bullet, ArrayList<Bullet> garbage)
     {
-        float xOffset = bullet.getTank().getCamera().getOffset().getX();
-        float yOffset = bullet.getTank().getCamera().getOffset().getY();
+        float xOffset = bullet.getTank().getCamera().getX();
+        float yOffset = bullet.getTank().getCamera().getY();
 
         if (checkConstraints(bullet, bullet.getWidth(), bullet.getHeight(), xOffset, yOffset))
         {

@@ -1,0 +1,31 @@
+{ "height":30,
+ "infinite":false,
+ "layers":[
+        {
+         "compression":"gzip",
+         "data":"H4sIAAAAAAAACu3DsQkAQAgEsLP80v2XdQPhSyGBVJJSPfCpfm5V1wMjanGEEA4AAA==",
+         "encoding":"base64",
+         "height":30,
+         "name":"Tile Layer 1",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":30,
+         "x":0,
+         "y":0
+        }],
+ "nextobjectid":1,
+ "orientation":"orthogonal",
+ "renderorder":"right-down",
+ "tiledversion":"1.1.5",
+ "tileheight":128,
+ "tilesets":[
+        {
+         "firstgid":1,
+         "source":"sheet_tanks.tsx"
+        }],
+ "tilewidth":128,
+ "type":"map",
+ "version":1,
+ "width":30
+}

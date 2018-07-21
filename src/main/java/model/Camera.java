@@ -1,22 +1,21 @@
 package model;
 
 
-import org.newdawn.slick.geom.Point;
+import org.newdawn.slick.geom.Vector2f;
+import util.Box;
 
-public class Camera
+import javax.swing.*;
+
+public class Camera extends Box
 {
-    private Point offset;
-
-    /**
-     * @param offset Wished offset, usually screenWidth/2 & screenHeight/2
-     * @param tank   Tank to observe
-     */
-    public Camera(Point offset)
+    public Camera(float x, float y, float width, float height)
     {
-        this.offset = offset;
+        super(x, y, width, height);
     }
 
-    public Point    getOffset() { return offset; }
-
-    public void     setOffset(Point offset) { this.offset = offset; }
+    public void centerOn(Sprite sprite)
+    {
+        x = sprite.getX() - (width / 2);
+        y = sprite.getY() - (height / 2);
+    }
 }

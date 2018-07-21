@@ -7,7 +7,7 @@ public class TankContainer extends AssetContainer
 {
     private static TankContainer instance = new TankContainer();
     // Relative location of tanks
-    private static final String TANKS = "/Tank/PNG/Tanks/";
+    private static final String TANKS = "/SimpleTanks/Tanks/";
 
     private ArrayList<Tank> tanks;
 

@@ -15,7 +15,7 @@ public class Bullet extends Sprite implements Drawable
     private int                 id;
     private Image               image;
     private boolean             initialState;
-    private int
+    private int                 livedTime;
 
     // Which player do I belong to?
     private Tank                tank;
