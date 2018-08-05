@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 
 public class Bullet extends Sprite implements Drawable
 {
-    public static final float   SPEED = .4f;
+    public static final float   SPEED = .1f;
     // Let bullet be alive for 3 seconds.
     public static final long    LIFE_TIME = 1000;
 
