@@ -16,6 +16,8 @@ public class Bullet extends Sprite implements Drawable
     private Image               image;
     private boolean             initialState;
 
+    private boolean             hasExploded;
+
     // When did the bullet spawn
     private long                spawnTime;
     // How long will it live
@@ -34,6 +36,7 @@ public class Bullet extends Sprite implements Drawable
         this.livedTime  = 0;
 
         initialState = true;
+        hasExploded = false;
         id = uid;
         uid++;
 
@@ -42,8 +45,14 @@ public class Bullet extends Sprite implements Drawable
     public int getId() { return id; }
     public int getWidth() { return image.getWidth(); }
     public int getHeight() { return image.getHeight(); }
+    public float getCenterX() { return getX() + getImage().getWidth()/2; }
+    public float getCenterY() { return getY() + getImage().getHeight()/2; }
     public Image getImage() { return image; }
     public Tank getTank() { return tank; }
+    public boolean hasExploded()
+    {
+        return hasExploded;
+    }
 
     public long getSpawnTime()
     {
@@ -70,5 +79,10 @@ public class Bullet extends Sprite implements Drawable
     public void setInitialState(boolean initialState)
     {
         this.initialState = initialState;
+    }
+
+    public void explode()
+    {
+        hasExploded = true;
     }
 }
