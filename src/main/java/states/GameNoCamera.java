@@ -1,43 +1,35 @@
 package states;
 
-
 import engine.Display;
-import engine.Engine;
 import manager.BulletManager;
 import manager.GameManager;
 import manager.TankManager;
 import model.*;
 import org.newdawn.slick.*;
-import org.newdawn.slick.geom.Circle;
 import org.newdawn.slick.geom.Point;
-import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Vector2f;
-import org.newdawn.slick.particles.ConfigurableEmitter;
-import org.newdawn.slick.particles.ParticleIO;
 import org.newdawn.slick.particles.ParticleSystem;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.tiled.TiledMap;
 import util.Key;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class Game extends BasicGameState
+public class GameNoCamera extends BasicGameState
 {
+
     public static final int         ID = 0;
 
 
-    private TiledMap                map;
+    private TiledMap map;
     private Tank                    tank;
-    private ArrayList<Bullet>       bullets;
+    private ArrayList<Bullet> bullets;
     private ArrayList<Explosion>    explosions;
-    private TankManager             tankManager;
-    private BulletManager           bulletManager;
-    private GameManager             gameManager;
-    private Camera                  camera;
+    private TankManager tankManager;
+    private BulletManager bulletManager;
+    private GameManager gameManager;
 
     private ArrayList<ParticleSystem> particleSystems;
 
@@ -74,32 +66,26 @@ public class Game extends BasicGameState
                 null
         );
 
-        camera = new Camera(tank);
     }
 
     @Override
     public void render(GameContainer gameContainer, StateBasedGame stateBasedGame, Graphics graphics) throws SlickException
     {
-        calcCameraPosition(tank);
-
-        float xOffset = camera.getX();
-        float yOffset = camera.getY();
-
         graphics.scale(Display.SCALE_FACTORS[Display.scale], Display.SCALE_FACTORS[Display.scale]);
 
 
-        map.render((int) -xOffset, (int) -yOffset);
+        map.render(0, 0);
 
         // Render bullets first, so they appear to go through the tank.
-        renderBullets(xOffset, yOffset);
-        renderTank(xOffset, yOffset);
-        renderExplosions(xOffset, yOffset, graphics);
+        renderBullets();
+        renderTank();
+        renderExplosions(graphics);
 
 
-        graphics.drawString("xOffset:       " + xOffset, 90f, 0f);
-        graphics.drawString("yOffset:       " + yOffset, 90f, 15f);
-        graphics.drawString("xStart:        " + (int)xOffset/map.getTileWidth(), 90f, 30f);
-        graphics.drawString("yStart:        " + (int)yOffset/map.getTileHeight(), 90f, 45f);
+//        graphics.drawString("xOffset:       " + xOffset, 90f, 0f);
+//        graphics.drawString("yOffset:       " + yOffset, 90f, 15f);
+//        graphics.drawString("xStart:        " + (int)xOffset/map.getTileWidth(), 90f, 30f);
+//        graphics.drawString("yStart:        " + (int)yOffset/map.getTileHeight(), 90f, 45f);
 
 //        disposeBullets(new Vector2f(xOffset, yOffset));
 
@@ -120,23 +106,23 @@ public class Game extends BasicGameState
 
         explosions.removeAll(garbage);
     }
-    public void renderExplosions(float xOffset, float yOffset, Graphics graphics)
+    public void renderExplosions(Graphics graphics)
     {
         for (Explosion explosion : explosions)
         {
             graphics.setColor(new Color(255, 0, 0, 255));
             // draw our own oval to count for camera offset.
 //            graphics.draw(explosion);
-            graphics.fillOval(explosion.getCenterX() - xOffset,
-                    explosion.getCenterY() - yOffset,
+            graphics.fillOval(explosion.getCenterX(),
+                    explosion.getCenterY(),
                     explosion.getRadius(), explosion.getRadius());
         }
     }
 
-    public void renderTank(float xOffset, float yOffset)
+    public void renderTank()
     {
-        float xTank = tank.getX() - xOffset;
-        float yTank = tank.getY() - yOffset;
+        float xTank = tank.getX();
+        float yTank = tank.getY();
 
         Image tankBase = tank.getTankBase();
 
@@ -145,15 +131,15 @@ public class Game extends BasicGameState
         tankBase.draw(xTank - (tankBase.getWidth()) / 2, yTank - (tankBase.getHeight()) / 2);
     }
 
-    public void renderBullets(float xOffset, float yOffset)
+    public void renderBullets()
     {
         for (Bullet bullet : BulletContainer.getInstance().getBullets())
         {
-            renderBullet(tank, bullet, xOffset, yOffset);
+            renderBullet(tank, bullet);
         }
     }
 
-    public void renderBullet(Tank tank, Bullet bullet, float xOffset, float yOffset)
+    public void renderBullet(Tank tank, Bullet bullet)
     {
         Image imgBullet = bullet.getImage();
 
@@ -176,27 +162,8 @@ public class Game extends BasicGameState
         imgBullet.setRotation(bullet.getRotation());
         imgBullet.setCenterOfRotation(imgBullet.getWidth() / 2, imgBullet.getHeight() + padding);
 
-        imgBullet.draw(bullet.getX() - (bullet.getWidth() / 2) - xOffset - tank.getDx(),
-                bullet.getY() - bullet.getHeight() - padding - yOffset + tank.getDy());
-    }
-
-    public void calcCameraPosition(Sprite sprite)
-    {
-
-        int mapWidth = map.getWidth() * map.getTileWidth();
-        int mapHeight = map.getHeight() * map.getTileHeight();
-
-        camera.centerOn(sprite);
-
-        if (camera.getEndX() >= mapWidth)
-            camera.setX(mapWidth - camera.getWidth());
-        else if (camera.getX() <= 0)
-            camera.setX(0);
-
-        if (camera.getEndY() >= mapHeight)
-            camera.setY(mapHeight - camera.getHeight());
-        else if (camera.getY() <= 0)
-            camera.setY(0);
+        imgBullet.draw(bullet.getX() - (bullet.getWidth() / 2) - tank.getDx(),
+                bullet.getY() - bullet.getHeight() - padding + tank.getDy());
     }
 
     @Override
@@ -248,7 +215,7 @@ public class Game extends BasicGameState
 //        }
 //    }
 
-    public void explode(Vector2f pos)
+    private void explode(Vector2f pos)
     {
         Explosion explosion = new Explosion(pos.x, pos.y);
         explosions.add(explosion);
@@ -308,14 +275,11 @@ public class Game extends BasicGameState
         if (change > 0 && Display.scale < Display.SCALE_FACTORS.length - 1)
         {
             Display.scale += 1;
-            camera.setWidth(Display.WIDTH / Display.getScale());
         }
 
         if (change < 0 && Display.scale > 1)
         {
             Display.scale -= 1;
-            camera.setHeight(Display.HEIGHT / Display.getScale());
         }
     }
-
 }
