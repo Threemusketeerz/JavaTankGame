@@ -11,7 +11,7 @@ public class Tank extends Sprite implements Drawable
     private Image               bullet;
     private String              description;
     private Collision           collision;
-    private Camera              camera;
+//    private Camera              camera;
     private boolean             drivingForwards, drivingBackwards;
     private boolean             shooting;
     // How long does the Tank have to wait before being able to shoot again?
@@ -42,13 +42,15 @@ public class Tank extends Sprite implements Drawable
     // Accessors
     public int              getWidth() { return tankBase.getWidth(); }
     public int              getHeight() { return tankBase.getHeight(); }
+    public float            getCenterX() { return getX() + getImage().getWidth()/2; }
+    public float            getCenterY() { return getY() + getImage().getHeight()/2; }
     @Override
     public Image            getImage() { return tankBase; }
     public Image            getTankBase() { return tankBase; }
     public Image            getBullet() { return bullet; }
     public long             getRateOfFire() { return rateOfFire; }
     public long             getLastFired() { return lastFired; }
-    public Camera           getCamera() { return camera; }
+//    public Camera           getCamera() { return camera; }
     public float            getSpeed() { return speed; }
 
     public boolean          isDrivingForwards() { return drivingForwards; }
@@ -75,6 +77,6 @@ public class Tank extends Sprite implements Drawable
         return drivingBackwards;
     }
 
-    public void setCamera(Camera camera) { this.camera = camera; }
+//    public void setCamera(Camera camera) { this.camera = camera; }
 
 }
