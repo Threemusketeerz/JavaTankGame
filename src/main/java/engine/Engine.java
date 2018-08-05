@@ -2,7 +2,6 @@ package engine;
 
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.StateBasedGame;
-import org.newdawn.slick.tiled.TiledMap;
 import states.Game;
 
 import java.io.File;
@@ -12,9 +11,6 @@ import java.io.File;
  */
 public class Engine extends StateBasedGame
 {
-    public static final int     WIDTH = 1024;
-    public static final int     HEIGHT = 768;
-    public static final int     FRAME_RATE = 60;
 
     private static boolean running = false;
 
@@ -44,8 +40,8 @@ public class Engine extends StateBasedGame
         {
             AppGameContainer appgc;
             appgc = new AppGameContainer(new Engine());
-            appgc.setDisplayMode(WIDTH, HEIGHT, false);
-            appgc.setTargetFrameRate(FRAME_RATE);
+            appgc.setDisplayMode(Display.WIDTH, Display.HEIGHT, false);
+            appgc.setTargetFrameRate(Display.FRAME_RATE);
             appgc.setVSync(true);
             appgc.start();
         }

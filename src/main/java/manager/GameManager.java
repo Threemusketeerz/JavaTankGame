@@ -12,10 +12,10 @@ public class GameManager
      *
      * @param sprite Sprite to move
      */
-    public static void move(Sprite sprite)
+    public static void move(Sprite sprite, int delta)
     {
-        sprite.setX(sprite.getX() + sprite.getDx());
-        sprite.setY(sprite.getY() + sprite.getDy());
+        sprite.setX(sprite.getX() + (sprite.getDx() * delta));
+        sprite.setY(sprite.getY() + (sprite.getDy() * delta));
     }
 
 
@@ -64,12 +64,12 @@ public class GameManager
         return violationState;
     }
 
-    public static void checkBulletConstraints(Bullet bullet, ArrayList<Bullet> garbage)
+    public static void checkBulletConstraints(Bullet bullet)
     {
         long livedTime = System.currentTimeMillis() - bullet.getSpawnTime();
         if (livedTime > bullet.LIFE_TIME)
         {
-            garbage.add(bullet);
+            bullet.explode();
         }
     }
 
