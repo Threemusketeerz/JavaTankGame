@@ -4,7 +4,7 @@ import engine.Engine;
 import model.*;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Point;
-import org.newdawn.slick.tiled.TiledMap;
+import parser.tiled.TiledMap;
 import states.Game;
 
 public class TankManager implements AssetManager

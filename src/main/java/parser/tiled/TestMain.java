@@ -1,35 +1,20 @@
-package engine;
+package parser.tiled;
 
-import org.newdawn.slick.*;
+import engine.Display;
+import org.newdawn.slick.AppGameContainer;
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
-import states.Game;
-import states.GameNoCamera;
+import parser.tiled.io.TMXFile;
 
 import java.io.File;
 
-/**
- * This class will drive the game.
- */
-public class Engine extends StateBasedGame
+public class TestMain extends StateBasedGame
 {
-
-    private static boolean running = false;
-
-    public Engine()
+    public TestMain()
     {
-        super("Java Tank Game");
+        super("Debug Window");
     }
-
-    @Override
-    public void initStatesList(GameContainer gameContainer) throws SlickException
-    {
-        running = true;
-//        addState(new GameNoCamera());
-
-        addState(new Game());
-        enterState(0);
-    }
-
     public static void main(String[] args)
     {
         File f = new File("natives");
@@ -38,11 +23,10 @@ public class Engine extends StateBasedGame
         {
             System.setProperty("org.lwjgl.librarypath", f.getAbsolutePath());
         }
-
         try
         {
             AppGameContainer appgc;
-            appgc = new AppGameContainer(new Engine());
+            appgc = new AppGameContainer(new TestMain());
             appgc.setDisplayMode(Display.WIDTH, Display.HEIGHT, false);
             appgc.setTargetFrameRate(Display.FRAME_RATE);
             appgc.setVSync(true);
@@ -52,6 +36,15 @@ public class Engine extends StateBasedGame
         {
             e.printStackTrace();
         }
+
+        TMXFile tmx = new TMXFile("Maps/TestMapFinal.tmx");
+        TiledMap tiledMap = tmx.generateTiledMap();
+        tiledMap.render();
+    }
+
+    @Override
+    public void initStatesList(GameContainer gameContainer) throws SlickException
+    {
 
     }
 }

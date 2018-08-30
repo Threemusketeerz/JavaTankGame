@@ -2,26 +2,20 @@ package states;
 
 
 import engine.Display;
-import engine.Engine;
 import manager.BulletManager;
 import manager.GameManager;
 import manager.TankManager;
 import model.*;
+import parser.tiled.io.TMXFile;
+import parser.tiled.TiledMap;
 import org.newdawn.slick.*;
-import org.newdawn.slick.geom.Circle;
 import org.newdawn.slick.geom.Point;
-import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Vector2f;
-import org.newdawn.slick.particles.ConfigurableEmitter;
-import org.newdawn.slick.particles.ParticleIO;
 import org.newdawn.slick.particles.ParticleSystem;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
-import org.newdawn.slick.tiled.TiledMap;
 import util.Key;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -59,7 +53,8 @@ public class Game extends BasicGameState
         bullets = BulletContainer.getInstance().getBullets();
         explosions = new ArrayList<>();
         particleSystems = new ArrayList<>();
-        map = new TiledMap("Maps/Map02.tmx");
+        TMXFile tmxFile = new TMXFile("Maps/Map01.tmx");
+        map = tmxFile.generateTiledMap();
         MapContainer.getInstance().setMap(map);
 
         int mapWidth = map.getWidth() * map.getTileWidth();
@@ -113,7 +108,10 @@ public class Game extends BasicGameState
         {
             Explosion explosion = it.next();
             if (explosion.isFinishedExpanding())
+            {
                 garbage.add(explosion);
+                it.remove();
+            }
             else
                 explosion.expand(delta);
         }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" tiledversion="1.1.5" orientation="orthogonal" renderorder="right-down" width="64" height="48" tilewidth="16" tileheight="16" infinite="0" nextobjectid="1">
+ <tileset firstgid="1" source="terrainTilesheet.tsx"/>
+ <layer name="Ground" width="64" height="48">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACu2X0QrCMAxFozi106n//7UW9lJQRtKmi9jzcN6WSy7sJs0sIvPgnDKPwbgW/m+Zw2Ak/OMf/yr/U+acuRj096qprbX4T8rvImpqay3+F1l3xtPQz141tbXkH//4xz/+RV6y7s4WNHt3ctSzaH3jXvj3QPMPJUc9i9YWXvekZu8ujnoWrS2OAOBOeY9F9xJBeY9F9xJBeY9F9wIwMsxiZjGz+HfR5rNnjj20azW0+eyZYw/tWg1tPnvm2EObOQPwn3junlatiPes5+5p1Yp4z3rO9lYt9gxo4fbl9mVWAAB88gZ/t6OJADAAAA==
+  </data>
+ </layer>
+</map>

@@ -30,8 +30,8 @@ public class Explosion extends Circle
             finishedExpanding = true;
         else
         {
-            setX(getX() - (expandRate * delta));
-            setY(getY() - (expandRate * delta));
+//            setX(getX() - (expandRate * delta));
+//            setY(getY() - (expandRate * delta));
 
             setRadius(getRadius() + (expandRate * delta));
         }

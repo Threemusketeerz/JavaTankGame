@@ -4,6 +4,9 @@ import engine.Display;
 import manager.BulletManager;
 import manager.GameManager;
 import manager.TankManager;
+import org.newdawn.slick.geom.Rectangle;
+//import parser.tiled.io.TMXFile;
+//import parser.tiled.TiledMap;
 import model.*;
 import org.newdawn.slick.*;
 import org.newdawn.slick.geom.Point;
@@ -11,7 +14,6 @@ import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.particles.ParticleSystem;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
-import org.newdawn.slick.tiled.TiledMap;
 import util.Key;
 
 import java.util.ArrayList;
@@ -23,16 +25,15 @@ public class GameNoCamera extends BasicGameState
     public static final int         ID = 0;
 
 
-    private TiledMap map;
+//    private TiledMap                map;
     private Tank                    tank;
-    private ArrayList<Bullet> bullets;
+    private ArrayList<Bullet>       bullets;
     private ArrayList<Explosion>    explosions;
-    private TankManager tankManager;
-    private BulletManager bulletManager;
-    private GameManager gameManager;
+    private TankManager             tankManager;
+    private BulletManager           bulletManager;
+    private GameManager             gameManager;
 
     private ArrayList<ParticleSystem> particleSystems;
-
     @Override
     public int getID()
     {
@@ -45,24 +46,25 @@ public class GameNoCamera extends BasicGameState
 //        createParticleEmitterFile("explosion");
 
         // Setup instances
-        tankManager = new TankManager();
-        bulletManager = new BulletManager();
-        gameManager = new GameManager();
-        bullets = BulletContainer.getInstance().getBullets();
-        explosions = new ArrayList<>();
-        particleSystems = new ArrayList<>();
-        map = new TiledMap("Maps/Map02.tmx");
-        MapContainer.getInstance().setMap(map);
+        tankManager     = new TankManager();
+        bulletManager   = new BulletManager();
+        gameManager     = new GameManager();
+        bullets         = BulletContainer.getInstance().getBullets();
+        explosions      = new ArrayList<>();
+//        TMXFile tmxFile = new TMXFile("Maps/TestMapFinal.tmx");
+//        map             = tmxFile.generateTiledMap();
+//        MapContainer.getInstance().setMap(map);
 
-        int mapWidth = map.getWidth() * map.getTileWidth();
-        int mapHeight = map.getHeight() * map.getTileHeight();
+//        int mapWidth = map.getWidth() * map.getTileWidth();
+//        int mapHeight = map.getHeight() * map.getTileHeight();
 
         tank = new Tank(tankManager.findAsset("blueTank01_big.png"),
                 bulletManager.findAsset("bullet01_big.png"),
                 "Player 1",
 //                mapWidth / 2, mapHeight / 2, 0f,
                 Display.WIDTH/2 / Display.getScale(), Display.HEIGHT/2 / Display.getScale(), 0f,
-                new Constraint(0, 0, mapWidth, mapHeight),
+//                new Constraint(0, 0, mapWidth, mapHeight),
+                null,
                 null
         );
 
@@ -73,19 +75,15 @@ public class GameNoCamera extends BasicGameState
     {
         graphics.scale(Display.SCALE_FACTORS[Display.scale], Display.SCALE_FACTORS[Display.scale]);
 
-
-        map.render(0, 0);
-
+//        map.render(0, 0);
+//
         // Render bullets first, so they appear to go through the tank.
         renderBullets();
         renderTank();
         renderExplosions(graphics);
 
-
-//        graphics.drawString("xOffset:       " + xOffset, 90f, 0f);
-//        graphics.drawString("yOffset:       " + yOffset, 90f, 15f);
-//        graphics.drawString("xStart:        " + (int)xOffset/map.getTileWidth(), 90f, 30f);
-//        graphics.drawString("yStart:        " + (int)yOffset/map.getTileHeight(), 90f, 45f);
+        graphics.setColor(Color.red);
+        graphics.fill(new Rectangle(0, 0, 100, 100));
 
 //        disposeBullets(new Vector2f(xOffset, yOffset));
 

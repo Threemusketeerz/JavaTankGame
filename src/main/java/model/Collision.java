@@ -2,7 +2,7 @@ package model;
 
 public class Collision
 {
-    // Position of the collision and width and height of it.
+    // Position of the collision and WIDTH and HEIGHT of it.
     private int x, y, width, height;
 
     public Collision(int x, int y, int width, int height)

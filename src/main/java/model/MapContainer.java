@@ -1,6 +1,6 @@
 package model;
 
-import org.newdawn.slick.tiled.TiledMap;
+import parser.tiled.TiledMap;
 
 public class MapContainer
 {
