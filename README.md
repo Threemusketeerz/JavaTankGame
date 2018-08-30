@@ -14,9 +14,9 @@ Run the .jar file and the game will run.
 
 And to run it type
 java -jar ./target/JavaTankGame1.0-SNAPSHOT.jar
---------------------------------------------------------
+-----------------------
 # DISCONTINUED
---------------------------------------------------------
+-----------------------
 After many hours of frustrations this approach ended up being ditched. 
 
 # So, what happened?
@@ -36,6 +36,3 @@ I learned how to use Maven, which was interesting.
 I got to apply basic maths to rendering positions and game logic, which was fun.
 I learned a ton about Game Engines them self, and a little bit about 3D rendering, and the difference between 2D and 3D.
 I learned not to expect to switch library at some point through the project. Read up on the project you wanna do, plan the technologies you wanna be using as well as what your game is about precisely.
-
---
-Well, after finding out that Java's Graphics library is quite limited when it comes to rendering tiled maps, another graphics library was tested, Slick2D. It turns out that this library is outdated, and me wanting to use something like Tiled (www.mapeditor.org)
